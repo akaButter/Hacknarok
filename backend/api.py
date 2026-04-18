@@ -88,21 +88,30 @@ def login(credentials: dict, db: Session = Depends(get_db)):
     }
 
 # PERSONALIZED COMFORT
+from typing import Optional
+from fastapi import Query
+
 @router.get("/bus/{bus_id}/comfort")
-def comfort(bus_id: str, user_id: str, db: Session = Depends(get_db)):
-
+def comfort(
+    bus_id: str,
+    user_id: Optional[str] = Query(None),
+    db: Session = Depends(get_db)
+):
     bus = db.query(BusState).filter_by(bus_id=bus_id).first()
-    user = db.query(User).filter_by(user_id=user_id).first()
 
-    if not bus or not user:
+    user = None
+    if user_id:
+        user = db.query(User).filter_by(user_id=user_id).first()
+
+    if not bus or (user_id and not user):
         return {"error": "not found"}
 
     return {
         "bus_id": bus_id,
         "ai": {
-            "comfort_level": compute_comfort(bus, user)
+            "comfort_level": compute_comfort(bus, user) if user else None
         }
-    }
+}
 
 
 
