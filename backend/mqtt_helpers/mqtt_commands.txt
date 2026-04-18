@@ -1,0 +1,9 @@
+cd "C:\Program Files\mosquitto"
+
+
+
+.\mosquitto_pub -t "bus/bus1/telemetry" -f "C:\Users\kingu\Documents\Hacknarok\backend\mqtt_helpers\json1.json"
+
+
+
+http://localhost:8000/
