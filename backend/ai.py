@@ -30,3 +30,23 @@ class VikingAI:
         return int(prediction[0])
 
 viking_predictor = VikingAI()
+
+def compute_comfort(bus, user) -> int:
+    """
+    Translates Database Objects into AI-ready inputs.
+    """
+    try:
+        score = viking_predictor.predict_comfort(
+            age=user.age,
+            sex=user.sex,
+            height=user.height,
+            weight=user.weight,
+            temp=bus.temperature,
+            humidity=bus.humidity,
+            density=bus.density,
+            pressure=bus.pressure
+        )
+        return score
+    except Exception as e:
+        print(f"AI Logic Error: {e}")
+        return 4
