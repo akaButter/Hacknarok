@@ -2,7 +2,7 @@ import onnxruntime as rt
 import numpy as np
 import os
 
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "viking_comfort_model.onnx")
+MODEL_PATH = "ai_engine/viking_comfort_model.onnx"
 
 class VikingAI:
     def __init__(self):

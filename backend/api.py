@@ -62,6 +62,31 @@ def register(user: dict, db: Session = Depends(get_db)):
     return {"status": "created"}
 
 
+# LOGIN USER
+@router.post("/login")
+def login(credentials: dict, db: Session = Depends(get_db)):
+    """
+    Expects: {"user_id": "viking123"} 
+    (Add "password" check here if your User model has it)
+    """
+    user_id = credentials.get("user_id")
+    user = db.query(User).filter_by(user_id=user_id).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="Viking not found in the Great Hall")
+
+    return {
+        "status": "success",
+        "message": f"Welcome back, {user.user_id}",
+        "user_data": {
+            "user_id": user.user_id,
+            "age": user.age,
+            "sex": user.sex,
+            "height": user.height,
+            "weight": user.weight
+        }
+    }
+
 # PERSONALIZED COMFORT
 @router.get("/bus/{bus_id}/comfort")
 def comfort(bus_id: str, user_id: str, db: Session = Depends(get_db)):
