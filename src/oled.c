@@ -136,6 +136,35 @@ static void write_text(const char *s)
     data(buf, 128);
 }
 
+static void write_text_line(uint8_t page, const char *s)
+{
+    uint8_t buf[128] = {0};
+    int x = 0;
+
+    while (*s && x < 120) {
+        const uint8_t *ch = get_char(*s);
+
+        for (int i = 0; i < 5; i++)
+            buf[x++] = ch[i];
+
+        buf[x++] = 0x00;
+        s++;
+    }
+
+    set_pos(page, 0);
+    data(buf, 128);
+}
+
+static void clear_screen(void)
+{
+    uint8_t blank[128] = {0};
+
+    for (int page = 0; page < 8; page++) {
+        set_pos(page, 0);
+        data(blank, 128);
+    }
+}
+
 /* ===== MAIN ===== */
 int main(void)
 {
@@ -146,11 +175,21 @@ int main(void)
 
     init();
 
-    while (1) {
-        write_text("A B 0");
-        k_msleep(2000);
+    clear_screen();
 
-        write_text("HELLO");
-        k_msleep(2000);
-    }
+    while (1) {
+    write_text_line(0, "  Autobus, linia 101");
+    write_text_line(1, "  Temperature: 21 C");
+    write_text_line(2, "  Humidity: 45 %");
+    write_text_line(3, "  People: 12");
+
+    k_msleep(2000);
+       
+    write_text_line(0, "  Autobus, linia 101");
+    write_text_line(1, "  Temperature: 22 C");
+    write_text_line(2, "  Humidity: 50 %");
+    write_text_line(3, "  People: 12");
+
+    k_msleep(2000);
+}
 }
