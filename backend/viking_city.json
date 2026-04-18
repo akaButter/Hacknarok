@@ -25,10 +25,10 @@
     {"id": "A15", "name": "Yggdrasil Plaza", "type": "HUB", "lat": 59.345, "lng": 18.045, "cap": 1500, "rid": "R5", "open": 0, "close": 24}
   ],
   "buses": [
-    {"id": "B01", "rid": "R1"}, {"id": "B02", "rid": "R1"},
-    {"id": "B03", "rid": "R2"}, {"id": "B04", "rid": "R2"},
-    {"id": "B05", "rid": "R3"}, {"id": "B06", "rid": "R3"},
-    {"id": "B07", "rid": "R4"}, {"id": "B08", "rid": "R4"},
-    {"id": "B09", "rid": "R5"}, {"id": "B10", "rid": "R6"}
+    {"id": "B01", "rid": "R1", "cap": 20}, {"id": "B02", "rid": "R1", "cap": 20},
+    {"id": "B03", "rid": "R2", "cap": 20}, {"id": "B04", "rid": "R2", "cap": 20},
+    {"id": "B05", "rid": "R3", "cap": 20}, {"id": "B06", "rid": "R3", "cap": 20},
+    {"id": "B07", "rid": "R4", "cap": 20}, {"id": "B08", "rid": "R4", "cap": 20},
+    {"id": "B09", "rid": "R5", "cap": 20}, {"id": "B10", "rid": "R6", "cap": 20}
   ]
 }
