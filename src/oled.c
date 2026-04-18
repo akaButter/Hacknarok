@@ -1,17 +1,14 @@
+#include "oled.h"
 #include <zephyr/kernel.h>
-#include <zephyr/device.h>
-#include <zephyr/drivers/i2c.h>
 
 /* ===== CONFIG ===== */
-#define I2C_NODE     DT_NODELABEL(i2c1)
-#define SSD1306_ADDR 0x3C
+#define oled_ADDR 0x3C
 
 static const struct device *i2c_dev;
 
-/* ===== FONT (same as yours truncated) ===== */
+/* ===== FONT ===== */
 static const uint8_t font5x7[][5] = {
 
-    // 0–9
     {0x3E,0x51,0x49,0x45,0x3E}, // 0
     {0x00,0x42,0x7F,0x40,0x00}, // 1
     {0x42,0x61,0x51,0x49,0x46}, // 2
@@ -23,7 +20,6 @@ static const uint8_t font5x7[][5] = {
     {0x36,0x49,0x49,0x49,0x36}, // 8
     {0x06,0x49,0x49,0x29,0x1E}, // 9
 
-    // A–Z
     {0x7E,0x11,0x11,0x11,0x7E}, // A
     {0x7F,0x49,0x49,0x49,0x36}, // B
     {0x3E,0x41,0x41,0x41,0x22}, // C
@@ -51,10 +47,11 @@ static const uint8_t font5x7[][5] = {
     {0x07,0x08,0x70,0x08,0x07}, // Y
     {0x61,0x51,0x49,0x45,0x43}, // Z
 
-    // space
-    {0x00,0x00,0x00,0x00,0x00}
+    {0x00,0x00,0x00,0x00,0x00}, // space
+    {0x08, 0x08, 0x08, 0x08, 0x08} // -
 };
 
+/* ===== FONT HELP ===== */
 static const uint8_t* get_char(char c)
 {
     if (c >= '0' && c <= '9')
@@ -66,14 +63,16 @@ static const uint8_t* get_char(char c)
     if (c >= 'a' && c <= 'z')
         return font5x7[10 + (c - 'a')];
 
-    return font5x7[36]; // space
+    if (c == '-') return font5x7[37]; // minus
+
+    return font5x7[36];
 }
 
-/* ===== I2C ===== */
+/* ===== I2C LOW LEVEL ===== */
 static int cmd(uint8_t c)
 {
     uint8_t b[2] = {0x00, c};
-    return i2c_write(i2c_dev, b, 2, SSD1306_ADDR);
+    return i2c_write(i2c_dev, b, 2, oled_ADDR);
 }
 
 static int data(uint8_t *d, size_t len)
@@ -81,14 +80,14 @@ static int data(uint8_t *d, size_t len)
     uint8_t buf[129];
     buf[0] = 0x40;
 
-    for (int i = 0; i < len; i++)
+    for (size_t i = 0; i < len; i++)
         buf[i + 1] = d[i];
 
-    return i2c_write(i2c_dev, buf, len + 1, SSD1306_ADDR);
+    return i2c_write(i2c_dev, buf, len + 1, oled_ADDR);
 }
 
 /* ===== INIT ===== */
-static void init(void)
+static void oled_hw_init(void)
 {
     k_msleep(100);
 
@@ -108,7 +107,7 @@ static void init(void)
     cmd(0xAF);
 }
 
-/* ===== SET POSITION ===== */
+/* ===== POSITION ===== */
 static void set_pos(uint8_t page, uint8_t col)
 {
     cmd(0xB0 + page);
@@ -116,27 +115,8 @@ static void set_pos(uint8_t page, uint8_t col)
     cmd(0x10 + (col >> 4));
 }
 
-/* ===== WRITE TEXT ===== */
-static void write_text(const char *s)
-{
-    uint8_t buf[128] = {0};
-    int x = 0;
-
-    while (*s && x < 120) {
-        const uint8_t *ch = get_char(*s);
-
-        for (int i = 0; i < 5; i++)
-            buf[x++] = ch[i];
-
-        buf[x++] = 0x00;
-        s++;
-    }
-
-    set_pos(0, 0);
-    data(buf, 128);
-}
-
-static void write_text_line(uint8_t page, const char *s)
+/* ===== INTERNAL DRAW ===== */
+static void draw_text_line(uint8_t page, const char *s)
 {
     uint8_t buf[128] = {0};
     int x = 0;
@@ -155,7 +135,19 @@ static void write_text_line(uint8_t page, const char *s)
     data(buf, 128);
 }
 
-static void clear_screen(void)
+/* ===== API ===== */
+int oled_init(const struct device *dev)
+{
+    i2c_dev = dev;
+
+    if (!device_is_ready(i2c_dev))
+        return -1;
+
+    oled_hw_init();
+    return 0;
+}
+
+void oled_clear(void)
 {
     uint8_t blank[128] = {0};
 
@@ -165,31 +157,12 @@ static void clear_screen(void)
     }
 }
 
-/* ===== MAIN ===== */
-int main(void)
+void oled_write_line(uint8_t page, const char *text)
 {
-    i2c_dev = DEVICE_DT_GET(I2C_NODE);
-
-    if (!device_is_ready(i2c_dev))
-        return 0;
-
-    init();
-
-    clear_screen();
-
-    while (1) {
-    write_text_line(0, "  Autobus, linia 101");
-    write_text_line(1, "  Temperature: 21 C");
-    write_text_line(2, "  Humidity: 45 %");
-    write_text_line(3, "  People: 12");
-
-    k_msleep(2000);
-       
-    write_text_line(0, "  Autobus, linia 101");
-    write_text_line(1, "  Temperature: 22 C");
-    write_text_line(2, "  Humidity: 50 %");
-    write_text_line(3, "  People: 12");
-
-    k_msleep(2000);
+    draw_text_line(page, text);
 }
+
+void oled_write(const char *text)
+{
+    draw_text_line(0, text);
 }

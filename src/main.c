@@ -1,80 +1,40 @@
 #include <zephyr/kernel.h>
-#include <zephyr/net/wifi_mgmt.h>
-#include <zephyr/net/net_event.h>
-#include <zephyr/logging/log.h>
 #include <zephyr/device.h>
-#include <zephyr/drivers/gpio.h>
+#include <zephyr/drivers/i2c.h>
 
-LOG_MODULE_REGISTER(app, LOG_LEVEL_INF);
+#include "oled.h"
+#include "model.h"
 
-#define LED_NODE DT_ALIAS(led0)
+#define I2C_NODE DT_NODELABEL(i2c1)
 
-static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED_NODE, gpios);
+static const struct device *i2c_dev;
 
-#define WIFI_SSID "Natalia"
-#define WIFI_PSK  "iot_test_97595"
-
-static struct net_mgmt_event_callback wifi_cb;
-
-static bool connected = false;
-
-static void handler(struct net_mgmt_event_callback *cb,
-                    uint32_t mgmt_event,
-                    struct net_if *iface)
-{
-    if (mgmt_event == NET_EVENT_IPV4_ADDR_ADD) {
-        LOG_INF("WiFi connected + got IP");
-        connected = true;
-    }
-}
+static float features[5];
 
 int main(void)
 {
-    int ret;
+    i2c_dev = DEVICE_DT_GET(I2C_NODE);
 
-    /* LED init */
-    if (!gpio_is_ready_dt(&led)) {
+    if (oled_init(i2c_dev) != 0)
         return 0;
-    }
 
-    gpio_pin_configure_dt(&led, GPIO_OUTPUT_INACTIVE);
+    oled_clear();
 
-    /* Register network callback */
-    net_mgmt_init_event_callback(&wifi_cb, handler,
-                                 NET_EVENT_IPV4_ADDR_ADD);
-    net_mgmt_add_event_callback(&wifi_cb);
+    oled_write_line(0, "  Autobus 101");
+    oled_write_line(1, "  Temp: 21 C");
+    oled_write_line(2, "  Hum: 45 %");
+    oled_write_line(3, "  People: 12");
 
-    struct net_if *iface = net_if_get_default();
+    int result;
 
-    struct wifi_connect_req_params params = {0};
+    features[0] = 21.0f;  // temperature
+    features[1] = 45.0f;  // humidity
+    features[2] = 0.5f;   // density
+    features[3] = 100.0f; // light
+    features[4] = 1013.0f;// pressure
+    result = predict(features);
 
-    params.ssid = WIFI_SSID;
-    params.ssid_length = strlen(WIFI_SSID);
-    params.psk = WIFI_PSK;
-    params.psk_length = strlen(WIFI_PSK);
-    params.security = WIFI_SECURITY_TYPE_PSK;
-    params.channel = WIFI_CHANNEL_ANY;
-    params.timeout = K_SECONDS(20);
-
-    LOG_INF("Connecting to WiFi...");
-
-    ret = net_mgmt(NET_REQUEST_WIFI_CONNECT, iface,
-                   &params, sizeof(params));
-
-    if (ret) {
-        LOG_ERR("WiFi connect failed (%d)", ret);
-        return 0;
-    }
-
-    /* wait for connection */
-    while (!connected) {
-        k_sleep(K_MSEC(500));
-    }
-
-    LOG_INF("Starting LED blink");
-
-    while (1) {
-        gpio_pin_toggle_dt(&led);
-        k_sleep(K_MSEC(500));
-    }
+    char buf[32];
+    snprintk(buf, sizeof(buf), "Result: %d", result);
+    oled_write_line(4, buf);
 }
