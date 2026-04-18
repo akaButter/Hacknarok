@@ -124,5 +124,5 @@ def create_bus(bus_id: str, db: Session = Depends(get_db)):
 
     return {
         "status": "created",
-        "bus_id": bus["bus_id"]
+        "bus_id": new_bus["bus_id"]
     }

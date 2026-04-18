@@ -1,0 +1,24 @@
+{
+  "routes": [
+    {"id": "R1", "name": "The Bifrost", "color": "#FF0000"},
+    {"id": "R2", "name": "The Iron Path", "color": "#808080"},
+    {"id": "R3", "name": "Valkyrie Loop", "color": "#FFD700"},
+    {"id": "R4", "name": "Fjord Express", "color": "#0000FF"}
+  ],
+  "attractions": [
+    {"id": "A1", "name": "Viking Ship Museum", "type": "MUSEUM", "lat": 59.328, "lng": 18.091, "cap": 300, "rid": "R1"},
+    {"id": "A2", "name": "Thor's Hammer Park", "type": "PARK", "lat": 59.330, "lng": 18.070, "cap": 1000, "rid": "R1"},
+    {"id": "A3", "name": "The Great Mead Hall", "type": "MUSEUM", "lat": 59.335, "lng": 18.060, "cap": 150, "rid": "R2"},
+    {"id": "A4", "name": "Odin's Observatory", "type": "MUSEUM", "lat": 59.340, "lng": 18.050, "cap": 200, "rid": "R2"},
+    {"id": "A5", "name": "Loki's Garden", "type": "PARK", "lat": 59.320, "lng": 18.080, "cap": 500, "rid": "R3"},
+    {"id": "A6", "name": "Rune Stone Gallery", "type": "MUSEUM", "lat": 59.325, "lng": 18.100, "cap": 100, "rid": "R3"},
+    {"id": "A7", "name": "Freya's Waterfall", "type": "PARK", "lat": 59.310, "lng": 18.110, "cap": 800, "rid": "R4"},
+    {"id": "A8", "name": "Valhalla Gate", "type": "STATION", "lat": 59.300, "lng": 18.120, "cap": 2000, "rid": "R4"}
+  ],
+  "buses": [
+    {"id": "B01", "rid": "R1"}, {"id": "B02", "rid": "R1"},
+    {"id": "B03", "rid": "R2"}, {"id": "B04", "rid": "R2"},
+    {"id": "B05", "rid": "R3"}, {"id": "B06", "rid": "R3"}, {"id": "B07", "rid": "R3"},
+    {"id": "B08", "rid": "R4"}, {"id": "B09", "rid": "R4"}, {"id": "B10", "rid": "R4"}
+  ]
+}
