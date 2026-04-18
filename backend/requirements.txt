@@ -4,3 +4,4 @@ sqlalchemy
 pydantic
 paho-mqtt
 onnxruntime
+numpy
