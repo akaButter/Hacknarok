@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Bus Dashboard</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 30px;
+            background: #f4f4f4;
+        }
+
+        .bus {
+            background: white;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .panel {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🚌 Bus Dashboard</h1>
+
+<button onclick="loadBuses()">Odśwież listę autobusów</button>
+
+<div id="buses"></div>
+
+<div class="panel" id="details">
+    <h3>Szczegóły autobusu</h3>
+    <pre id="busDetails">Kliknij autobus</pre>
+</div>
+
+<script>
+async function loadBuses() {
+    const res = await fetch("/buses");
+    const buses = await res.json();
+
+    const container = document.getElementById("buses");
+    container.innerHTML = "";
+
+    buses.forEach(bus => {
+        const div = document.createElement("div");
+        div.className = "bus";
+
+        div.innerHTML = `
+            <b>${bus.bus_id}</b><br/>
+            Temp: ${bus.temperature ?? "-"} °C<br/>
+            People: ${bus.people_count ?? "-"}<br/>
+            Comfort: ${bus.general_comfort_level ?? "-"}
+        `;
+
+        div.onclick = () => loadBus(bus.bus_id);
+
+        container.appendChild(div);
+    });
+}
+
+async function loadBus(id) {
+    const res = await fetch(`/bus/${id}`);
+    const bus = await res.json();
+
+    document.getElementById("busDetails").textContent =
+        JSON.stringify(bus, null, 2);
+}
+
+// auto load
+loadBuses();
+</script>
+
+</body>
+</html>
