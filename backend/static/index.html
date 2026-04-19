@@ -94,9 +94,6 @@ function render(data, title) {
         title + "\n\n" + JSON.stringify(data, null, 2);
 }
 
-/* =========================
-   BUSES
-========================= */
 
 async function loadBuses() {
     const res = await fetch("/buses");
@@ -138,9 +135,6 @@ async function createBus() {
     render(await res.json(), "Create Bus");
 }
 
-/* =========================
-   USER
-========================= */
 
 async function register() {
     const res = await fetch("/register", {
@@ -168,9 +162,6 @@ async function login() {
     render(await res.json(), "Login");
 }
 
-/* =========================
-   COMFORT + FEEDBACK
-========================= */
 
 async function getComfort() {
     const res = await fetch(
@@ -192,9 +183,6 @@ async function sendFeedback() {
     render(await res.json(), "Feedback");
 }
 
-/* =========================
-   ATTRACTIONS
-========================= */
 
 async function getAttractions() {
     const res = await fetch("/attractions");
@@ -226,9 +214,6 @@ async function getAttractionComfort() {
     render(await res.json(), "Attraction Comfort");
 }
 
-/* =========================
-   TOUR
-========================= */
 
 async function generateTour() {
     const res = await fetch(`/generate-tour?user_id=${tour_user.value}`);

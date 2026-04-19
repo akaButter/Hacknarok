@@ -60,6 +60,6 @@ class ComfortFeedback(Base):
     people_count = Column(Integer)
 
     predicted_comfort = Column(Float)
-    user_feedback = Column(Float)  # np. 1–5 albo -1/1
+    user_feedback = Column(Float)
 
     timestamp = Column(DateTime, default=datetime.utcnow)
