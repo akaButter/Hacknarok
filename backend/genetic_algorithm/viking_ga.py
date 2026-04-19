@@ -11,7 +11,8 @@ class VikingOptimizer:
         self.tour_size = tour_size
         self.all_attractions = db.query(Attraction).all()
         self.attraction_ids = [a.id for a in self.all_attractions]
-        self.current_hour = datetime.now().hour
+        #self.current_hour = datetime.now().hour
+        self.current_hour = 12
 
     def get_best_bus_comfort(self, route_id):
         """Finds the single most optimal bus on the line right now."""
@@ -34,14 +35,11 @@ class VikingOptimizer:
         for i in range(len(tour)):
             attr = next(a for a in self.all_attractions if a.id == tour[i])
 
-            # 1. HARD CONSTRAINT: Closed Hours
             if not (attr.open_hour <= self.current_hour < attr.close_hour):
                 return 0 # Gene is dead
 
-            # 2. BUILDING EVALUATION (Calling your actual AI logic)
             total_score += compute_comfort(attr, self.user)
 
-            # 3. TRANSIT & GEOGRAPHY
             if i > 0:
                 # Add comfort of the BEST bus on the route leading here
                 transit_score = self.get_best_bus_comfort(attr.route_id)

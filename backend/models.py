@@ -34,6 +34,10 @@ class Attraction(Base):
     route_id = Column(String, ForeignKey("routes.id"))
     open_hour = Column(Integer)
     close_hour = Column(Integer)
+    temperature = Column(Float)
+    humidity = Column(Float)
+    pressure = Column(Float)
+    people_count = Column(Integer)
 
 class User(Base):
     __tablename__ = "users"

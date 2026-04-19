@@ -1,4 +1,5 @@
 import json
+from random import random
 from db import SessionLocal, engine, Base
 from models import Route, Attraction, BusState
 
@@ -59,7 +60,8 @@ def forge_world():
         db.add(Attraction(
             id=a["id"], name=a["name"], type=a["type"],
             lat=a["lat"], lng=a["lng"], capacity=a.get("cap", 500),
-            route_id=a["rid"], open_hour=a["open"], close_hour=a["close"]
+            route_id=a["rid"], open_hour=a["open"], close_hour=a["close"], temperature=random() * 10 + 20, 
+            humidity=random() * 50 + 30, pressure=random() * 20 + 1000, people_count=int(random() * a.get("cap", 500)/2)
         ))
 
     for b in city_data["buses"]:

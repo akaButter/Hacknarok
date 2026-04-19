@@ -1,45 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Bus Dashboard</title>
-    <style>
-        body {
-            font-family: Arial;
-            margin: 30px;
-            background: #f4f4f4;
-        }
-
-        .bus {
-            background: white;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .panel {
-            margin-top: 20px;
-            padding: 15px;
-            background: white;
-            border-radius: 8px;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Viking API Panel</title>
+<style>
+    body { font-family: Arial; margin: 20px; }
+    .section { margin-bottom: 30px; padding: 10px; border: 1px solid #ccc; }
+    .bus, .item { padding: 8px; border: 1px solid #ddd; margin: 5px; cursor: pointer; }
+    input, button { margin: 5px; padding: 5px; }
+    pre { background: #111; color: #0f0; padding: 10px; }
+</style>
 </head>
 <body>
 
-<h1>🚌 Bus Dashboard</h1>
+<h1>🚍 Viking API Panel</h1>
 
-<button onclick="loadBuses()">Odśwież listę autobusów</button>
+<div class="section">
+    <h2>Buses</h2>
+    <button onclick="loadBuses()">Load Buses</button>
+    <div id="buses"></div>
+</div>
 
-<div id="buses"></div>
+<div class="section">
+    <h2>Single Bus</h2>
+    <input id="bus_id" placeholder="bus_id">
+    <button onclick="loadBus()">Get Bus</button>
+</div>
 
-<div class="panel" id="details">
-    <h3>Szczegóły autobusu</h3>
-    <pre id="busDetails">Kliknij autobus</pre>
+<div class="section">
+    <h2>Create Bus</h2>
+    <input id="new_bus_id" placeholder="bus_id">
+    <button onclick="createBus()">Create</button>
+</div>
+
+<div class="section">
+    <h2>User Register</h2>
+    <input id="u_user" placeholder="user_id">
+    <input id="u_age" placeholder="age">
+    <input id="u_gender" placeholder="gender">
+    <input id="u_height" placeholder="height">
+    <input id="u_weight" placeholder="weight">
+    <button onclick="register()">Register</button>
+</div>
+
+<div class="section">
+    <h2>Login</h2>
+    <input id="login_user" placeholder="user_id">
+    <button onclick="login()">Login</button>
+</div>
+
+<div class="section">
+    <h2>Comfort AI</h2>
+    <input id="c_bus" placeholder="bus_id">
+    <input id="c_user" placeholder="user_id">
+    <button onclick="getComfort()">Get Comfort</button>
+</div>
+
+<div class="section">
+    <h2>Feedback</h2>
+    <input id="fb_bus" placeholder="bus_id">
+    <input id="fb_user" placeholder="user_id">
+    <input id="fb_val" placeholder="feedback (1-8)">
+    <button onclick="sendFeedback()">Send</button>
+</div>
+
+<div class="section">
+    <h2>Attractions</h2>
+    <button onclick="getAttractions()">Load Attractions</button>
+    <div id="attractions"></div>
+</div>
+
+<div class="section">
+    <h2>Attraction Comfort</h2>
+    <input id="a_id" placeholder="attraction_id">
+    <input id="a_user" placeholder="user_id">
+    <button onclick="getAttractionComfort()">Check Comfort</button>
+</div>
+
+<div class="section">
+    <h2>Generate Tour</h2>
+    <input id="tour_user" placeholder="user_id">
+    <button onclick="generateTour()">Generate</button>
+</div>
+
+<div class="section">
+    <h2>Output</h2>
+    <pre id="output"></pre>
 </div>
 
 <script>
+function render(data, title) {
+    document.getElementById("output").textContent =
+        title + "\n\n" + JSON.stringify(data, null, 2);
+}
+
+/* =========================
+   BUSES
+========================= */
+
 async function loadBuses() {
     const res = await fetch("/buses");
     const buses = await res.json();
@@ -53,27 +111,129 @@ async function loadBuses() {
 
         div.innerHTML = `
             <b>${bus.bus_id}</b><br/>
-            Temp: ${bus.temperature ?? "-"} °C<br/>
+            Temp: ${bus.temperature ?? "-"}<br/>
             People: ${bus.people_count ?? "-"}<br/>
             Comfort: ${bus.general_comfort_level ?? "-"}
         `;
 
         div.onclick = () => loadBus(bus.bus_id);
-
         container.appendChild(div);
     });
 }
 
 async function loadBus(id) {
-    const res = await fetch(`/bus/${id}`);
-    const bus = await res.json();
+    if (!id) id = document.getElementById("bus_id").value;
 
-    document.getElementById("busDetails").textContent =
-        JSON.stringify(bus, null, 2);
+    const res = await fetch(`/bus/${id}`);
+    render(await res.json(), "Bus Details");
 }
 
-// auto load
-loadBuses();
+async function createBus() {
+    const id = document.getElementById("new_bus_id").value;
+
+    const res = await fetch("/bus?bus_id=" + id, {
+        method: "POST"
+    });
+
+    render(await res.json(), "Create Bus");
+}
+
+/* =========================
+   USER
+========================= */
+
+async function register() {
+    const res = await fetch("/register", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+            user_id: u_user.value,
+            age: Number(u_age.value),
+            gender: u_gender.value,
+            height: Number(u_height.value),
+            weight: Number(u_weight.value)
+        })
+    });
+
+    render(await res.json(), "Register");
+}
+
+async function login() {
+    const res = await fetch("/login", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ user_id: login_user.value })
+    });
+
+    render(await res.json(), "Login");
+}
+
+/* =========================
+   COMFORT + FEEDBACK
+========================= */
+
+async function getComfort() {
+    const res = await fetch(
+        `/bus/${c_bus.value}/comfort?user_id=${c_user.value}`
+    );
+    render(await res.json(), "Comfort AI");
+}
+
+async function sendFeedback() {
+    const res = await fetch(`/bus/${fb_bus.value}/comfort/feedback`, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+            user_id: fb_user.value,
+            feedback: Number(fb_val.value)
+        })
+    });
+
+    render(await res.json(), "Feedback");
+}
+
+/* =========================
+   ATTRACTIONS
+========================= */
+
+async function getAttractions() {
+    const res = await fetch("/attractions");
+    const data = await res.json();
+
+    const container = document.getElementById("attractions");
+    container.innerHTML = "";
+
+    data.forEach(a => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerText = `${a.name} (${a.type})`;
+        div.onclick = () => getAttraction(a.id);
+        container.appendChild(div);
+    });
+
+    render(data, "Attractions");
+}
+
+async function getAttraction(id) {
+    const res = await fetch(`/attraction/${id}`);
+    render(await res.json(), "Attraction");
+}
+
+async function getAttractionComfort() {
+    const res = await fetch(
+        `/attraction/${a_id.value}/comfort?user_id=${a_user.value}`
+    );
+    render(await res.json(), "Attraction Comfort");
+}
+
+/* =========================
+   TOUR
+========================= */
+
+async function generateTour() {
+    const res = await fetch(`/generate-tour?user_id=${tour_user.value}`);
+    render(await res.json(), "Tour");
+}
 </script>
 
 </body>

@@ -2,6 +2,8 @@ import onnxruntime as rt
 import numpy as np
 import os
 
+from models import Attraction
+
 MODEL_PATH = "ai_engine/viking_comfort_model.onnx"
 
 class VikingAI:
@@ -26,25 +28,24 @@ class VikingAI:
         ]], dtype=np.float32)
 
         prediction = self.session.run([self.label_name], {self.input_name: input_data})[0]
-        
         return int(prediction[0])
 
 viking_predictor = VikingAI()
 
-def compute_comfort(bus, user) -> int:
+def compute_comfort(place, user) -> int:
     """
     Translates Database Objects into AI-ready inputs.
     """
     try:
         score = viking_predictor.predict_comfort(
             age=user.age,
-            gender=user.gender,
+            gender=0 if user.gender.lower() == "male" else 1,
             height=user.height,
             weight=user.weight,
-            temp=bus.temperature,
-            humidity=bus.humidity,
-            density=bus.density,
-            pressure=bus.pressure
+            temp=place.temperature,
+            humidity=place.humidity if place.humidity is not None else 50,
+            density=place.people_count/place.capacity if place.capacity else 0,
+            pressure=place.pressure if place.pressure is not None else 1013
         )
         return score
     except Exception as e:
