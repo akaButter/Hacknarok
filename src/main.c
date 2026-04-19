@@ -31,22 +31,22 @@ int main(void)
     if (oled_init(i2c_dev) != 0) {
         LOG_ERR("OLED init failed");
         return 0;
-    }
+    } 
 
     oled_clear();
-    oled_write_line(0, "Autobus 101");
-    oled_write_line(1, "Tempereture: 21");
-    oled_write_line(2, "Humidity: 45");
+    oled_write_line(0, "  Autobus B01");
+    oled_write_line(1, "  Tempereture: 21");
+    oled_write_line(2, "  Humidity: 45");
 
     led_bar_init();
 
     if (people_counter_init() != 0) {
-        LOG_ERR("People counter init failed");
+        LOG_ERR("  People counter init failed");
         return 0;
     }
 
     people_counter_start();
-    LOG_INF("People counter started");
+    LOG_INF("  People counter started");
 
     features[0] = 35.0f;
     features[1] = 90.0f;
@@ -65,7 +65,7 @@ int main(void)
         int current = people_counter_get();
 
         if (current != last_people) {
-            snprintf(buf, sizeof(buf), "People: %d", current);
+            snprintf(buf, sizeof(buf), "  People: %d", current);
             oled_write_line(3, buf);
 
             LOG_INF("People changed: %d", current);

@@ -4,7 +4,6 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
 project(firmware)
 
-# Main firmware source (C only)
 target_sources(app PRIVATE
   src/main.c
   src/oled.c

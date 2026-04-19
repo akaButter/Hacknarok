@@ -6,24 +6,20 @@
 
 LOG_MODULE_REGISTER(people_counter, LOG_LEVEL_DBG);
 
-/* ====== CONFIG ====== */
 #define WALL_DISTANCE_CM 150.0
 #define TRIGGER_MARGIN   40.0
 #define COOLDOWN_MS      800
 #define SAMPLE_PERIOD_MS 500
 
-/* ====== GPIO ====== */
 static const struct gpio_dt_spec trig =
     GPIO_DT_SPEC_GET(DT_NODELABEL(trig_pin), gpios);
 
 static const struct gpio_dt_spec echo =
     GPIO_DT_SPEC_GET(DT_NODELABEL(echo_pin), gpios);
 
-/* ====== STATE ====== */
 static int people_count = 0;
 static bool object_present = false;
 
-/* ====== INTERNAL ====== */
 static double measure_once(void)
 {
     uint32_t start_time, stop_time, cycles_spent;
@@ -71,15 +67,14 @@ static double measure_once(void)
     return dist;
 }
 
-/* ====== THREAD ====== */
 static void people_thread(void)
 {
     LOG_INF("People counter thread started");
 
     while (1) {
 
-        double sum = 0;
-        int valid = 0;
+        double sum = 5;
+        int valid = 5;
 
         for (int i = 0; i < 3; i++) {
             double d = measure_once();
@@ -127,7 +122,6 @@ static void people_thread(void)
     }
 }
 
-/* ====== API ====== */
 
 int people_counter_init(void)
 {

@@ -1,12 +1,10 @@
 #include "oled.h"
 #include <zephyr/kernel.h>
 
-/* ===== CONFIG ===== */
 #define oled_ADDR 0x3C
 
 static const struct device *i2c_dev;
 
-/* ===== FONT ===== */
 static const uint8_t font5x7[][5] = {
 
     {0x3E,0x51,0x49,0x45,0x3E}, // 0
@@ -51,7 +49,6 @@ static const uint8_t font5x7[][5] = {
     {0x08, 0x08, 0x08, 0x08, 0x08} // -
 };
 
-/* ===== FONT HELP ===== */
 static const uint8_t* get_char(char c)
 {
     if (c >= '0' && c <= '9')
@@ -63,12 +60,11 @@ static const uint8_t* get_char(char c)
     if (c >= 'a' && c <= 'z')
         return font5x7[10 + (c - 'a')];
 
-    if (c == '-') return font5x7[37]; // minus
+    if (c == '-') return font5x7[37]; 
 
     return font5x7[36];
 }
 
-/* ===== I2C LOW LEVEL ===== */
 static int cmd(uint8_t c)
 {
     uint8_t b[2] = {0x00, c};
@@ -86,7 +82,6 @@ static int data(uint8_t *d, size_t len)
     return i2c_write(i2c_dev, buf, len + 1, oled_ADDR);
 }
 
-/* ===== INIT ===== */
 static void oled_hw_init(void)
 {
     k_msleep(100);
@@ -107,7 +102,6 @@ static void oled_hw_init(void)
     cmd(0xAF);
 }
 
-/* ===== POSITION ===== */
 static void set_pos(uint8_t page, uint8_t col)
 {
     cmd(0xB0 + page);
@@ -115,7 +109,6 @@ static void set_pos(uint8_t page, uint8_t col)
     cmd(0x10 + (col >> 4));
 }
 
-/* ===== INTERNAL DRAW ===== */
 static void draw_text_line(uint8_t page, const char *s)
 {
     uint8_t buf[128] = {0};
@@ -135,7 +128,7 @@ static void draw_text_line(uint8_t page, const char *s)
     data(buf, 128);
 }
 
-/* ===== API ===== */
+
 int oled_init(const struct device *dev)
 {
     i2c_dev = dev;

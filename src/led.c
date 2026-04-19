@@ -7,10 +7,9 @@ LOG_MODULE_REGISTER(led_bar, LOG_LEVEL_INF);
 #define GPIO1_NODE DT_NODELABEL(gpio1)
 static const struct device *gpio1 = DEVICE_DT_GET(GPIO1_NODE);
 
-/* P1.08–P1.15 */
+
 static const uint8_t pins[8] = {8, 9, 10, 11, 12, 13, 14, 15};
 
-/* Common anode → active LOW */
 void led_bar_set(uint8_t value)
 {
     if (value > 8) value = 8;
