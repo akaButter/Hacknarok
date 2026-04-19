@@ -3,8 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from db import get_db
 from sqlalchemy.orm import Session
 
-from models import BusState, User
+from models import BusState, User, Attraction
 from ai import compute_comfort
+from genetic_algorithm.viking_ga import VikingOptimizer
 
 router = APIRouter()
 
@@ -88,30 +89,21 @@ def login(credentials: dict, db: Session = Depends(get_db)):
     }
 
 # PERSONALIZED COMFORT
-from typing import Optional
-from fastapi import Query
-
 @router.get("/bus/{bus_id}/comfort")
-def comfort(
-    bus_id: str,
-    user_id: Optional[str] = Query(None),
-    db: Session = Depends(get_db)
-):
+def comfort(bus_id: str, user_id: str, db: Session = Depends(get_db)):
+
     bus = db.query(BusState).filter_by(bus_id=bus_id).first()
+    user = db.query(User).filter_by(user_id=user_id).first()
 
-    user = None
-    if user_id:
-        user = db.query(User).filter_by(user_id=user_id).first()
-
-    if not bus or (user_id and not user):
+    if not bus or not user:
         return {"error": "not found"}
 
     return {
         "bus_id": bus_id,
         "ai": {
-            "comfort_level": compute_comfort(bus, user) if user else None
+            "comfort_level": compute_comfort(bus, user)
         }
-}
+    }
 
 
 
@@ -135,3 +127,28 @@ def create_bus(bus_id: str, db: Session = Depends(get_db)):
         "status": "created",
         "bus_id": new_bus["bus_id"]
     }
+
+@router.get("/generate-tour")
+def generate_tour(user_id: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter_by(user_id=user_id).first()
+    optimizer = VikingOptimizer(db, user)
+    
+    best_tour_ids = optimizer.evolve()
+    
+    # Map IDs back to full objects for the frontend
+    full_tour = []
+    for tid in best_tour_ids:
+        attr = db.query(Attraction).filter_by(id=tid).first()
+        full_tour.append({
+            "name": attr.name,
+            "lat": attr.lat,
+            "lng": attr.lng,
+            "type": attr.type
+        })
+        
+    return {"suggested_tour": full_tour}
+
+@router.get("/attractions")
+def get_all_attractions(db: Session = Depends(get_db)):
+    locations = db.query(Attraction).all()
+    return locations
