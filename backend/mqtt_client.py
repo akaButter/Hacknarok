@@ -5,7 +5,7 @@ from db import SessionLocal
 from models import BusState, Attraction
 
 MQTT_BROKER = "localhost"
-TOPIC = "+/+/telemetry"  # albo bardziej precyzyjnie niżej
+TOPIC = "+/+/telemetry"
 
 BUS_TOPIC = "bus/+/telemetry"
 ATTRACTION_TOPIC = "attraction/+/telemetry"
