@@ -76,7 +76,7 @@ navTitle: {
   fontSize: 28, fontWeight: '900', marginBottom: 20, textAlign: 'center', letterSpacing: 1
 },
 woodButton: {
-  backgroundColor: '#3E2723', // Ciemny brąz (drewno)
+  backgroundColor: '#3E2723',
   padding: 15,
   margin: 20,
   borderRadius: 5,
@@ -88,7 +88,7 @@ woodButton: {
 },
 woodButtonText: {
   color: '#D4AF37',
-  fontFamily: 'VikingFont', // Twój nowy font!
+  fontFamily: 'VikingFont',
   fontSize: 16,
   letterSpacing: 1
 }

@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   hours: { fontSize: 12, color: '#E8EBF1' },
   backButtonFloating: {
   position: 'absolute',
-  top: 50, // Pod status barem
+  top: 50,
   left: 20,
   backgroundColor: '#D4AF37',
   width: 50,
@@ -99,8 +99,8 @@ const styles = StyleSheet.create({
   borderRadius: 25,
   justifyContent: 'center',
   alignItems: 'center',
-  elevation: 5, // Cień na Android
-  shadowColor: '#000', // Cień na iOS
+  elevation: 5,
+  shadowColor: '#000',
   shadowOffset: { width: 0, height: 2 },
   shadowOpacity: 0.3,
   borderWidth: 2,
