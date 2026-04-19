@@ -35,10 +35,11 @@ Backend:
 
 Optimization module:
  - Genetic algorithm-based route generator
- - Finds optimal bus routes balancing:
- - Travel distance
- - Passenger comfort
- - Occupancy levels
+ - Finds the optimal itinerary balancing:
+   - Travel distance
+   - Passenger comfort
+   - Occupancy levels
+   - Destination comfort
 
 Mobile application:
  - User authentication system
@@ -61,7 +62,7 @@ Optimization:
   - Genetic algorithm for route planning
   - Multi-objective optimization (comfort + distance)
 
---
+---
 
 ## Technologies
 
