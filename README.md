@@ -1,4 +1,4 @@
-﻿# Hacknarok AIOT - Bus++
+﻿# Hacknarok AIOT - DrakkarTour
 
  This project was developed as part of an AIoT (Artificial Intelligence of Things) challenge under the theme Smart City.
  It focuses on improving urban public transport experience by combining embedded systems, machine learning, and a mobile application ecosystem.
@@ -75,8 +75,11 @@ Backend:
   - ONNX Runtime
 
 AI Model training:
- - 
+ - Sklearn
+ - XGBoost
+ - Optuna
 
 Frontend:
   - React Native
+  - typescript
 
