@@ -10,13 +10,13 @@ class VikingAI:
         self.input_name = self.session.get_inputs()[0].name
         self.label_name = self.session.get_outputs()[0].name
 
-    def predict_comfort(self, age, sex, height, weight, temp, humidity, density, pressure) -> int:
+    def predict_comfort(self, age, gender, height, weight, temp, humidity, density, pressure) -> int:
         """
         Receives raw data from the bus sensors/user profile and returns 1-8.
         """
         input_data = np.array([[
             float(age), 
-            float(sex), 
+            float(gender), 
             float(height), 
             float(weight), 
             float(temp), 
@@ -38,7 +38,7 @@ def compute_comfort(bus, user) -> int:
     try:
         score = viking_predictor.predict_comfort(
             age=user.age,
-            sex=user.sex,
+            gender=user.gender,
             height=user.height,
             weight=user.weight,
             temp=bus.temperature,
