@@ -1,4 +1,6 @@
-from sqlalchemy import Column, String, Float, Integer, BigInteger, ForeignKey
+from datetime import datetime
+
+from sqlalchemy import Column, DateTime, DateTime, String, Float, Integer, BigInteger, ForeignKey
 from db import Base
 
 
@@ -40,3 +42,20 @@ class User(Base):
     gender = Column(String)
     height = Column(Integer)
     weight = Column(Integer)
+
+
+class ComfortFeedback(Base):
+    __tablename__ = "comfort_feedback"
+
+    id = Column(Integer, primary_key=True)
+    bus_id = Column(String)
+    user_id = Column(String, nullable=True)
+
+    temperature = Column(Float)
+    humidity = Column(Float)
+    people_count = Column(Integer)
+
+    predicted_comfort = Column(Float)
+    user_feedback = Column(Float)  # np. 1–5 albo -1/1
+
+    timestamp = Column(DateTime, default=datetime.utcnow)
