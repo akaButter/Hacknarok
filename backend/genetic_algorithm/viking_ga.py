@@ -11,7 +11,8 @@ class VikingOptimizer:
         self.tour_size = tour_size
         self.all_attractions = db.query(Attraction).all()
         self.attraction_ids = [a.id for a in self.all_attractions]
-        self.current_hour = datetime.now().hour
+        #self.current_hour = datetime.now().hour
+        self.current_hour = 12
 
     def get_best_bus_comfort(self, route_id):
         """Finds the single most optimal bus on the line right now."""

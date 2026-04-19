@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Slider from '@react-native-community/slider';
 
 
-// Typy danych z Twojego API
+
 interface BusDetailData {
   bus_id: string;
   sensor: { temperature: number; humidity: number; pressure: number };
@@ -25,13 +25,12 @@ export default function BusProfile() {
   try {
     const userId = await AsyncStorage.getItem('user_id') || "unknown_viking";
     
-    // Wysyłamy dokładnie to, czego oczekuje Twój @router.post
     const payload = {
       user_id: userId,
-      feedback: userFeedback // Wartość 1-8
+      feedback: userFeedback 
     };
 
-    await axios.post(`http://TWOJE_IP:5000/bus/${id}/comfort/feedback`, payload);
+    await axios.post(`https://arguable-populace-hankering.ngrok-free.dev/bus/${id}/comfort/feedback`, payload);
     
     Alert.alert("Topór w górę!", "Twoja opinia została zapisana w kronikach.");
   } catch (err) {
@@ -70,13 +69,13 @@ export default function BusProfile() {
     <ScrollView style={styles.container}>
       <Text style={styles.title}>DRAKKAR {bus?.bus_id}</Text>
 
-      {/* Główna karta AI */}
+  
       <View style={styles.comfortCard}>
         <Text style={styles.comfortLabel}>TWÓJ KOMFORT (PRZEPOWIEDNIA AI)</Text>
         <Text style={styles.comfortValue}>{personalComfort}/8</Text>
       </View>
 
-      {/* Dane z czujników */}
+  
       <View style={styles.grid}>
         <View style={styles.statBox}>
           <Text style={styles.statLabel}>Temperatura</Text>

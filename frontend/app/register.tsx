@@ -8,7 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function RegisterProfile() {
   const router = useRouter();
   const [form, setForm] = useState({
-    user_id: 'u' + Math.floor(Math.random() * 1000),
+    user_id: '',
     age: '',
     gender: 'male',
     height: '',
@@ -46,6 +46,8 @@ export default function RegisterProfile() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <View style={styles.container}>
       <Text style={styles.header}>PROFIL WIKINGA</Text>
+      <Text style={styles.label}>Imię wikinga:</Text>
+      <TextInput style={styles.input} onChangeText={(v) => setForm({...form, user_id: v})} />
       
       <Text style={styles.label}>Płeć:</Text>
       <View style={styles.genderRow}>
@@ -75,6 +77,10 @@ export default function RegisterProfile() {
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>RUSZAJ W DROGĘ</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => router.push('/login' as any)}>
+              <Text style={styles.linkText}>Masz już konto? Zaloguj się!</Text>
+            </TouchableOpacity>
     </View>
     </TouchableWithoutFeedback>
   );
@@ -90,5 +96,6 @@ const styles = StyleSheet.create({
   activeBtn: { borderColor: '#D4AF37', borderWidth: 2 },
   btnText: { color: '#FFF' },
   button: { backgroundColor: '#D4AF37', padding: 20, borderRadius: 50, alignItems: 'center', marginTop: 20 },
-  buttonText: { color: '#1A222D', fontWeight: 'bold' }
+  buttonText: { color: '#1A222D', fontWeight: 'bold' },
+  linkText: { color: '#BDC3C7', textAlign: 'center', marginTop: 20, textDecorationLine: 'underline' }
 });

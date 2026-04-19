@@ -2,24 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ionicons } from '@expo/vector-icons'; // Ikony wbudowane w Expo
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Home() {
   const router = useRouter();
   const [userName, setUserName] = useState('Wojowniku');
 
   useEffect(() => {
-    const checkUser = async () => {
-      const user = await AsyncStorage.getItem('user_id');
-      if (!user) {
-        // Jeśli nie ma użytkownika, wyślij go do rejestracji
-        router.replace('/register' as any);
-      } else {
-        setUserName(user);
-      }
-    };
-    checkUser();
-  }, []);
+  const checkSession = async () => {
+    const user = await AsyncStorage.getItem('user_id');
+    if (!user) {
+      router.replace('/login' as any);
+    } else {
+      setUserName(user);
+    }
+  };
+  checkSession();
+}, []);
 
   return (
     <ScrollView style={styles.container}>
@@ -46,6 +45,14 @@ export default function Home() {
           <Ionicons name="map-outline" size={40} color="#D4AF37" />
           <Text style={styles.menuText}>MAPA WYPRAW</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={[styles.menuItem, { backgroundColor: '#4B0082' }]}
+          onPress={() => router.push('/tour' as any)}
+        >
+          <Ionicons name="sparkles-outline" size={40} color="#D4AF37" />
+          <Text style={styles.menuText}>GENERATOR WYPRAW</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Sekcja Informacyjna */}
@@ -64,7 +71,7 @@ export default function Home() {
         style={styles.resetBtn} 
         onPress={async () => {
           await AsyncStorage.clear();
-          router.replace('/register' as any);
+          router.replace('/login' as any);
         }}
       >
         <Text style={styles.resetText}>ZMIEŃ WOJOWNIKA (LOGOUT)</Text>
@@ -78,7 +85,7 @@ const styles = StyleSheet.create({
   header: { marginTop: 40, marginBottom: 30 },
   greeting: { color: '#BDC3C7', fontSize: 18 },
   userName: { color: '#D4AF37', fontSize: 32, fontWeight: 'bold', textTransform: 'uppercase' },
-  menuGrid: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30 },
+  menuGrid: { flexDirection: 'column', justifyContent: 'space-between', marginBottom: 30 },
   menuItem: { 
     width: '48%', 
     height: 150, 
