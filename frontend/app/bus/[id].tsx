@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator,TouchableOpacity, Alert } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Slider from '@react-native-community/slider';
+
 
 // Typy danych z Twojego API
 interface BusDetailData {
@@ -12,11 +14,33 @@ interface BusDetailData {
 }
 
 export default function BusProfile() {
-  const { id } = useLocalSearchParams(); // Pobiera 'id' z adresu URL
+  const { id } = useLocalSearchParams();
   const [bus, setBus] = useState<BusDetailData | null>(null);
   const [personalComfort, setPersonalComfort] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userFeedback, setUserFeedback] = useState(4); 
+  const [isSending, setIsSending] = useState(false);
+  const sendFeedback = async () => {
+  setIsSending(true);
+  try {
+    const userId = await AsyncStorage.getItem('user_id') || "unknown_viking";
+    
+    // Wysyłamy dokładnie to, czego oczekuje Twój @router.post
+    const payload = {
+      user_id: userId,
+      feedback: userFeedback // Wartość 1-8
+    };
 
+    await axios.post(`http://TWOJE_IP:5000/bus/${id}/comfort/feedback`, payload);
+    
+    Alert.alert("Topór w górę!", "Twoja opinia została zapisana w kronikach.");
+  } catch (err) {
+    console.error(err);
+    Alert.alert("Błąd!", "Nie udało się połączyć z serwerem.");
+  } finally {
+    setIsSending(false);
+  }
+  };
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -71,6 +95,37 @@ export default function BusProfile() {
           <Text style={styles.statValue}>{bus?.edge.general_comfort_level}/8</Text>
         </View>
       </View>
+
+      <View style={styles.feedbackContainer}>
+  <Text style={styles.feedbackTitle}>OCEŃ PRZEPOWIEDNIĘ AI (1-8)</Text>
+  
+  <View style={styles.scaleDescription}>
+    <Text style={styles.scaleText}>1 - Lodowe piekło</Text>
+    <Text style={styles.scaleText}>8 - Valhalla</Text>
+  </View>
+
+  <Slider
+    value={userFeedback}
+    onValueChange={(v: any) => setUserFeedback(Math.floor(v))}
+    minimumValue={1}
+    maximumValue={8}
+    step={1}
+    minimumTrackTintColor="#D4AF37"
+    thumbTintColor="#D4AF37"
+  />
+  
+  <Text style={styles.bigNumber}>{userFeedback}</Text>
+
+  <TouchableOpacity 
+    style={styles.confirmBtn} 
+    onPress={sendFeedback}
+    disabled={isSending}
+  >
+    <Text style={styles.confirmBtnText}>
+      {isSending ? "PRZESYŁANIE..." : "POTWIERDŹ KOMFORT"}
+    </Text>
+  </TouchableOpacity>
+</View>
     </ScrollView>
   );
 }
@@ -100,5 +155,19 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   statLabel: { color: '#BDC3C7', fontSize: 14, marginBottom: 5 },
-  statValue: { color: '#FFF', fontSize: 20, fontWeight: 'bold' }
+  statValue: { color: '#FFF', fontSize: 20, fontWeight: 'bold' },
+  feedbackContainer: {
+    backgroundColor: '#2C3E50',
+    padding: 20,
+    borderRadius: 15,
+    marginTop: 20,
+    borderWidth: 1,
+    borderColor: '#D4AF37',
+  },
+  feedbackTitle: { color: '#D4AF37', textAlign: 'center', fontWeight: 'bold', marginBottom: 10 },
+  scaleDescription: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
+  scaleText: { color: '#BDC3C7', fontSize: 10 },
+  bigNumber: { color: '#FFF', fontSize: 40, textAlign: 'center', fontWeight: 'bold', marginVertical: 10 },
+  confirmBtn: { backgroundColor: '#D4AF37', padding: 15, borderRadius: 8, alignItems: 'center' },
+  confirmBtnText: { color: '#1A222D', fontWeight: 'bold', letterSpacing: 1 }
 });
