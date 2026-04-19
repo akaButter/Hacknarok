@@ -53,7 +53,7 @@ def forge_world():
             id=r["id"], 
             name=r["name"], 
             color=r["color"], 
-            path=json.dumps(r["path"]) # Convert list to string
+            path=json.dumps(r["path"])
         ))
 
     for a in city_data["attractions"]:
@@ -69,7 +69,7 @@ def forge_world():
             bus_id=b["id"],
             route_id=b["rid"],
             capacity=b.get("cap", 20),
-            temperature=20.0, # Initial default
+            temperature=20.0,
             people_count=0
         ))
 

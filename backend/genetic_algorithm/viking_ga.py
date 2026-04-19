@@ -20,16 +20,15 @@ class VikingOptimizer:
         if not buses:
             return 0  # Path is impossible if no buses exist
         
-        # Evaluate each bus using the real AI model
         scores = [compute_comfort(bus, self.user) for bus in buses]
         return max(scores)
 
     def calculate_distance(self, lat1, lon1, lat2, lon2):
-        """Simple Pythagorean distance to penalize long travel times."""
+        """Pythagorean distance to penalize long travel times."""
         return ((lat1 - lat2)**2 + (lon1 - lon2)**2)**0.5
 
     def evaluate_fitness(self, tour):
-        """The Master Evaluation Function."""
+        """Evaluation Function"""
         total_score = 0
         
         for i in range(len(tour)):
@@ -41,33 +40,30 @@ class VikingOptimizer:
             total_score += compute_comfort(attr, self.user)
 
             if i > 0:
-                # Add comfort of the BEST bus on the route leading here
                 transit_score = self.get_best_bus_comfort(attr.route_id)
                 if transit_score == 0: return 0
                 total_score += transit_score
 
-                # Penalty for distance from previous stop (Geography matters!)
                 prev_attr = next(a for a in self.all_attractions if a.id == tour[i-1])
                 dist = self.calculate_distance(attr.lat, attr.lng, prev_attr.lat, prev_attr.lng)
-                total_score -= (dist * 10) # Adjust multiplier to tune 'laziness'
+                total_score -= (dist * 10) 
 
         return max(total_score, 0)
 
     def select_parent(self, population):
-        """Tournament Selection: Pick 3 random tours, best one wins breeding rights."""
+        """Picks 3 random tours, best one wins breeding rights."""
         tournament = random.sample(population, k=min(3, len(population)))
         tournament.sort(key=lambda t: self.evaluate_fitness(t), reverse=True)
         return tournament[0]
 
     def crossover(self, parent1, parent2):
-        """Ordered Crossover (OX1) - essential for permutation problems."""
+        """Ordered Crossover (OX1)"""
         size = self.tour_size
         start, end = sorted(random.sample(range(size), 2))
         
         child = [None] * size
         child[start:end] = parent1[start:end]
         
-        # Fill remaining slots with Parent 2 genes while maintaining order
         p2_pointer = 0
         for i in range(size):
             if child[i] is None:
@@ -85,14 +81,11 @@ class VikingOptimizer:
 
     def evolve(self, pop_size=30, generations=100):
         """The Main Evolutionary Loop."""
-        # Initial Population
         population = [random.sample(self.attraction_ids, self.tour_size) for _ in range(pop_size)]
         
         for gen in range(generations):
-            # Sort by fitness (Elitism)
             population.sort(key=lambda t: self.evaluate_fitness(t), reverse=True)
             
-            # Keep top 2 survivors
             new_population = population[:2]
             
             while len(new_population) < pop_size:
@@ -105,4 +98,4 @@ class VikingOptimizer:
             
             population = new_population
             
-        return population[0] # Return the most fabulous tour found
+        return population[0]

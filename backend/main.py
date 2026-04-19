@@ -13,7 +13,7 @@ app.include_router(router)
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 
-# start MQTT przy starcie aplikacji
+# start MQTT
 @app.on_event("startup")
 def startup_event():
     start_mqtt()
