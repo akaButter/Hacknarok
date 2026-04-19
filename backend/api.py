@@ -190,3 +190,34 @@ def send_feedback(
     db.commit()
 
     return {"status": "feedback_saved"}
+
+@router.get("/generate-tour/{user_id}")
+def generate_tour(user_id: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter_by(user_id=user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Viking not found. Please register first.")
+
+    optimizer = VikingOptimizer(db, user, tour_size=5)
+
+    best_tour_ids = optimizer.evolve(pop_size=30, generations=100)
+
+    if not best_tour_ids or optimizer.evaluate_fitness(best_tour_ids) == 0:
+        return {"error": "No comfortable tour found. Everything is closed or too crowded!"}
+
+    full_tour_data = []
+    for attr_id in best_tour_ids:
+        attr = db.query(Attraction).filter_by(id=attr_id).first()
+        full_tour_data.append({
+            "id": attr.id,
+            "name": attr.name,
+            "type": attr.type,
+            "lat": attr.lat,
+            "lng": attr.lng,
+            "route_id": attr.route_id
+        })
+
+    return {
+        "status": "success",
+        "viking_path": full_tour_data,
+        "total_comfort_score": optimizer.evaluate_fitness(best_tour_ids)
+    }
