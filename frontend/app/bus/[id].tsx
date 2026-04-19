@@ -4,6 +4,7 @@ import { useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Slider from '@react-native-community/slider';
+import { useRouter } from 'expo-router';
 
 
 
@@ -20,6 +21,7 @@ export default function BusProfile() {
   const [loading, setLoading] = useState(true);
   const [userFeedback, setUserFeedback] = useState(4); 
   const [isSending, setIsSending] = useState(false);
+  const router = useRouter();
   const sendFeedback = async () => {
   setIsSending(true);
   try {
@@ -68,14 +70,10 @@ export default function BusProfile() {
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>DRAKKAR {bus?.bus_id}</Text>
-
-  
-      <View style={styles.comfortCard}>
+<View style={styles.comfortCard}>
         <Text style={styles.comfortLabel}>TWÓJ KOMFORT (PRZEPOWIEDNIA AI)</Text>
         <Text style={styles.comfortValue}>{personalComfort}/8</Text>
       </View>
-
-  
       <View style={styles.grid}>
         <View style={styles.statBox}>
           <Text style={styles.statLabel}>Temperatura</Text>
@@ -94,15 +92,12 @@ export default function BusProfile() {
           <Text style={styles.statValue}>{bus?.edge.general_comfort_level}/8</Text>
         </View>
       </View>
-
       <View style={styles.feedbackContainer}>
   <Text style={styles.feedbackTitle}>OCEŃ PRZEPOWIEDNIĘ AI (1-8)</Text>
-  
   <View style={styles.scaleDescription}>
     <Text style={styles.scaleText}>1 - Lodowe piekło</Text>
     <Text style={styles.scaleText}>8 - Valhalla</Text>
   </View>
-
   <Slider
     value={userFeedback}
     onValueChange={(v: any) => setUserFeedback(Math.floor(v))}
@@ -111,62 +106,83 @@ export default function BusProfile() {
     step={1}
     minimumTrackTintColor="#D4AF37"
     thumbTintColor="#D4AF37"
-  />
-  
+  />  
   <Text style={styles.bigNumber}>{userFeedback}</Text>
-
   <TouchableOpacity 
     style={styles.confirmBtn} 
     onPress={sendFeedback}
     disabled={isSending}
-  >
-    <Text style={styles.confirmBtnText}>
+  ><Text style={styles.confirmBtnText}>
       {isSending ? "PRZESYŁANIE..." : "POTWIERDŹ KOMFORT"}
     </Text>
   </TouchableOpacity>
 </View>
+<TouchableOpacity 
+  style={styles.woodButton} 
+  onPress={() => router.replace('/list' as any)}
+><Text style={styles.woodButtonText}>← POWRÓT DO LISTY DRAKKARÓW</Text>
+</TouchableOpacity>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#1A222D', padding: 20 },
-  loader: { flex: 1, backgroundColor: '#1A222D', justifyContent: 'center' },
-  title: { color: '#D4AF37', fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginVertical: 20 },
+  container: { flex: 1, backgroundColor: '#121C28', padding: 20 },
+  loader: { flex: 1, backgroundColor: '#121C28', justifyContent: 'center' },
+  title: { color: '#D4AF37', fontSize: 28, fontWeight: '900', textAlign: 'center', marginVertical: 20, letterSpacing: 1, marginTop: 60, fontFamily: 'VikingFont' },
   comfortCard: { 
-    backgroundColor: '#3E2723', 
-    padding: 25, 
-    borderRadius: 20, 
+    backgroundColor: '#1F2A36', 
+    padding: 26, 
+    borderRadius: 22, 
     alignItems: 'center', 
-    borderWidth: 2, 
-    borderColor: '#D4AF37',
+    borderWidth: 1,
+    borderColor: '#2F4460',
     marginBottom: 20 
   },
-  comfortLabel: { color: '#D4AF37', fontSize: 12, letterSpacing: 1 },
-  comfortValue: { color: '#FFF', fontSize: 64, fontWeight: 'bold' },
+  comfortLabel: { color: '#D4AF37', fontSize: 12, letterSpacing: 1.0, fontFamily: 'ScandiFont' },
+  comfortValue: { color: '#FFF', fontSize: 64, fontWeight: '900', fontFamily: 'ScandiFont' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
   statBox: { 
-    backgroundColor: '#2C3E50', 
+    backgroundColor: '#1F2A36', 
     width: '48%', 
-    padding: 20, 
-    borderRadius: 15, 
+    padding: 18, 
+    borderRadius: 18, 
     marginBottom: 15,
-    alignItems: 'center'
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#2F4460'
   },
-  statLabel: { color: '#BDC3C7', fontSize: 14, marginBottom: 5 },
-  statValue: { color: '#FFF', fontSize: 20, fontWeight: 'bold' },
+  statLabel: { color: '#B8C1CC', fontSize: 14, marginBottom: 8 },
+  statValue: { color: '#FFF', fontSize: 20, fontWeight: 'bold', fontFamily: 'ScandiFont' },
   feedbackContainer: {
-    backgroundColor: '#2C3E50',
+    backgroundColor: '#1F2A36',
     padding: 20,
-    borderRadius: 15,
+    borderRadius: 18,
     marginTop: 20,
     borderWidth: 1,
-    borderColor: '#D4AF37',
+    borderColor: '#2F4460',
   },
-  feedbackTitle: { color: '#D4AF37', textAlign: 'center', fontWeight: 'bold', marginBottom: 10 },
-  scaleDescription: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
-  scaleText: { color: '#BDC3C7', fontSize: 10 },
-  bigNumber: { color: '#FFF', fontSize: 40, textAlign: 'center', fontWeight: 'bold', marginVertical: 10 },
-  confirmBtn: { backgroundColor: '#D4AF37', padding: 15, borderRadius: 8, alignItems: 'center' },
-  confirmBtnText: { color: '#1A222D', fontWeight: 'bold', letterSpacing: 1 }
+  feedbackTitle: { color: '#D4AF37', textAlign: 'center', fontWeight: 'bold', marginBottom: 12, letterSpacing: 1, fontFamily: 'ScandiFont' },
+  scaleDescription: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12, fontFamily: 'ScandiFont' },
+  scaleText: { color: '#B8C1CC', fontSize: 10, fontFamily: 'ScandiFont' },
+  bigNumber: { color: '#FFF', fontSize: 42, textAlign: 'center', fontWeight: 'bold', marginVertical: 12 },
+  confirmBtn: { backgroundColor: '#D4AF37', padding: 16, borderRadius: 14, alignItems: 'center' },
+  confirmBtnText: { color: '#121C28', fontWeight: 'bold', letterSpacing: 1, fontFamily: 'ScandiFont' },
+  woodButton: {
+  backgroundColor: '#3E2723', // Ciemny brąz (drewno)
+  padding: 15,
+  margin: 20,
+  borderRadius: 5,
+  borderWidth: 1,
+  borderColor: '#D4AF37',
+  alignItems: 'center',
+  flexDirection: 'row',
+  justifyContent: 'center'
+},
+woodButtonText: {
+  color: '#D4AF37',
+  fontFamily: 'VikingFont', // Twój nowy font!
+  fontSize: 16,
+  letterSpacing: 1
+}
 });

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,52 +21,48 @@ export default function Home() {
 }, []);
 
   return (
-    <ScrollView style={styles.container}>
-      {/* Nagłówek z klimatem */}
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <View style={styles.header}>
         <Text style={styles.greeting}>Witaj w Midgardzie,</Text>
         <Text style={styles.userName}>{userName}</Text>
       </View>
 
-      {/* Główne Menu - Duże Kafle */}
       <View style={styles.menuGrid}>
         <TouchableOpacity 
-          style={[styles.menuItem, { backgroundColor: '#3E2723' }]} 
+          style={[styles.menuItem, { backgroundColor: '#1F2A36' }]} 
           onPress={() => router.push('/list' as any)}
         >
-          <Ionicons name="boat-outline" size={40} color="#D4AF37" />
-          <Text style={styles.menuText}>FLOTA</Text>
+          <Ionicons name="boat-outline" size={38} color="#D4AF37" />
+          <Text style={styles.menuText}>FLOTA DRAKKARÓW</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
-          style={[styles.menuItem, { backgroundColor: '#2C3E50' }]} 
+          style={[styles.menuItem, { backgroundColor: '#1F2A36' }]} 
           onPress={() => router.push('/map' as any)}
         >
-          <Ionicons name="map-outline" size={40} color="#D4AF37" />
+          <Ionicons name="map-outline" size={38} color="#D4AF37" />
           <Text style={styles.menuText}>MAPA WYPRAW</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
-          style={[styles.menuItem, { backgroundColor: '#4B0082' }]}
+          style={[styles.menuItem, { backgroundColor: '#1F2A36' }]}
           onPress={() => router.push('/tour' as any)}
         >
-          <Ionicons name="sparkles-outline" size={40} color="#D4AF37" />
+          <Ionicons name="sparkles-outline" size={38} color="#D4AF37" />
           <Text style={styles.menuText}>GENERATOR WYPRAW</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Sekcja Informacyjna */}
       <View style={styles.infoSection}>
-        <Text style={styles.infoTitle}>PRZEPOWIEDNIA DZISIAJ</Text>
+        <Text style={styles.infoTitle}>PRZEPOWIEDNIA WYROCZNI</Text>
         <View style={styles.infoCard}>
           <Ionicons name="sunny-outline" size={24} color="#D4AF37" />
           <Text style={styles.infoContent}>
-            Dobre warunki na podróż. AI sugeruje drakkary z niską wilgotnością dla Twojego wzrostu.
+            Należy szukać nowych lądów na zachód od Odynowskiego kamienia.
           </Text>
         </View>
       </View>
 
-      {/* Przycisk resetu (do testów na hackathonie) */}
       <TouchableOpacity 
         style={styles.resetBtn} 
         onPress={async () => {
@@ -74,38 +70,48 @@ export default function Home() {
           router.replace('/login' as any);
         }}
       >
-        <Text style={styles.resetText}>ZMIEŃ WOJOWNIKA (LOGOUT)</Text>
+        <Text style={styles.resetText}>WYLOGUJ SIĘ</Text>
       </TouchableOpacity>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#1A222D', padding: 20 },
+  container: {  backgroundColor: '#121C28', flex:1, height: '100%' },
+  scrollContent: { padding: 20, backgroundColor: '#121C28', minHeight: '100%' },
   header: { marginTop: 40, marginBottom: 30 },
-  greeting: { color: '#BDC3C7', fontSize: 18 },
-  userName: { color: '#D4AF37', fontSize: 32, fontWeight: 'bold', textTransform: 'uppercase' },
-  menuGrid: { flexDirection: 'column', justifyContent: 'space-between', marginBottom: 30 },
+  greeting: { color: '#B7C0C9', fontSize: 18, letterSpacing: 1, marginBottom: 6, fontFamily: 'ScandiFont' },
+  userName: { color: '#D4AF37', fontSize: 34, fontWeight: '900', textTransform: 'uppercase',fontFamily: 'VikingFont' },
+  menuGrid: { flexDirection: 'column', marginBottom: 30 },
   menuItem: { 
-    width: '48%', 
-    height: 150, 
-    borderRadius: 20, 
+    width: '100%', 
+    minHeight: 140, 
+    borderRadius: 24, 
     justifyContent: 'center', 
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#D4AF37'
+    borderColor: '#D4AF37',
+    padding: 20,
+    backgroundColor: '#1F2A36',
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+    marginBottom: 16,
   },
-  menuText: { color: '#FFF', marginTop: 10, fontWeight: 'bold', letterSpacing: 2 },
+  menuText: { color: '#FFF', marginTop: 12, fontWeight: 'bold', letterSpacing: 2.5, fontSize: 16, fontFamily: 'ScandiFont' },
   infoSection: { marginBottom: 30 },
-  infoTitle: { color: '#D4AF37', fontSize: 14, fontWeight: 'bold', marginBottom: 10 },
+  infoTitle: { color: '#D4AF37', fontSize: 14, fontWeight: 'bold', marginBottom: 12, letterSpacing: 1.2,fontFamily: 'VikingFont' },
   infoCard: { 
-    backgroundColor: '#243447', 
+    backgroundColor: '#192533', 
     padding: 20, 
-    borderRadius: 15, 
+    borderRadius: 18, 
     flexDirection: 'row', 
-    alignItems: 'center' 
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#2F4460',fontFamily: 'VikingFont'
   },
-  infoContent: { color: '#FFF', marginLeft: 15, flex: 1, fontSize: 14, lineHeight: 20 },
-  resetBtn: { marginTop: 20, padding: 15, alignItems: 'center' },
-  resetText: { color: '#666', fontSize: 12, textDecorationLine: 'underline' }
+  infoContent: { color: '#E8EBF1', marginLeft: 14, flex: 1, fontSize: 14, lineHeight: 22,fontFamily: 'ScandiFont' },
+  resetBtn: { marginTop: 20, padding: 15, alignItems: 'center', borderRadius: 16, borderWidth: 1, borderColor: '#D4AF37' ,fontFamily: 'ScandiFont'},
+  resetText: { color: '#D4AF37', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1.5 ,fontFamily: 'ScandiFont'}
 });

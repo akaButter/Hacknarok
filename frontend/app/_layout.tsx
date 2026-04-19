@@ -1,24 +1,31 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+import * as Font from 'expo-font';
+import { useEffect, useState } from 'react';
+import { MedievalSharp_400Regular } from '@expo-google-fonts/medievalsharp';
+import {Metamorphous_400Regular} from '@expo-google-fonts/metamorphous';
+import * as SplashScreen from 'expo-splash-screen';
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const [fontsLoaded, setFontsLoaded] = useState(false);
 
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+  useEffect(() => {
+    async function loadFonts() {
+      try {
+        await Font.loadAsync({
+          'VikingFont': MedievalSharp_400Regular,
+          'ScandiFont': Metamorphous_400Regular
+        });
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setFontsLoaded(true);
+        await SplashScreen.hideAsync();
+      }
+    }
+    loadFonts();
+  }, []);
+
+  if (!fontsLoaded) return null;
+
+  return <Stack screenOptions={{ headerShown: false }} />;
 }
