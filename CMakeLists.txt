@@ -9,4 +9,5 @@ target_sources(app PRIVATE
   src/main.c
   src/oled.c
   src/model.c
+  src/led.c
 )

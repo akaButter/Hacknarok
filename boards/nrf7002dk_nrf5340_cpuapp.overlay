@@ -1,0 +1,37 @@
+&gpio1 {
+    my_leds {
+        compatible = "gpio-leds";
+
+        my_led0: led_0 { gpios = <&gpio1 13 GPIO_ACTIVE_HIGH>; };
+        my_led1: led_1 { gpios = <&gpio1 14 GPIO_ACTIVE_HIGH>; };
+        my_led2: led_2 { gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>; };
+        my_led3: led_3 { gpios = <&gpio1 16 GPIO_ACTIVE_HIGH>; };
+        my_led4: led_4 { gpios = <&gpio1 17 GPIO_ACTIVE_HIGH>; };
+        my_led5: led_5 { gpios = <&gpio1 18 GPIO_ACTIVE_HIGH>; };
+        my_led6: led_6 { gpios = <&gpio1 19 GPIO_ACTIVE_HIGH>; };
+        my_led7: led_7 { gpios = <&gpio1 20 GPIO_ACTIVE_HIGH>; };
+    };
+};
+
+&i2c1 {
+    status = "okay";
+
+    ssd1306: ssd1306@3c {
+        compatible = "solomon,ssd1306fb";
+        reg = <0x3c>;
+        status = "okay";
+
+        width = <128>;
+        height = <64>;
+
+        segment-offset = <0>;
+        page-offset = <0>;
+        display-offset = <0>;
+        multiplex-ratio = <63>;
+
+        segment-remap;
+        com-invdir;
+
+        prechargep = <0x22>;
+    };
+};

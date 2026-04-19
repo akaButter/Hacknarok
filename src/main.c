@@ -4,6 +4,7 @@
 
 #include "oled.h"
 #include "model.h"
+#include "led.h"
 
 #define I2C_NODE DT_NODELABEL(i2c1)
 
@@ -17,6 +18,7 @@ int main(void)
 
     if (oled_init(i2c_dev) != 0)
         return 0;
+    led_bar_init();
 
     oled_clear();
 
@@ -27,14 +29,12 @@ int main(void)
 
     int result;
 
-    features[0] = 21.0f;  // temperature
-    features[1] = 45.0f;  // humidity
-    features[2] = 0.5f;   // density
-    features[3] = 100.0f; // light
-    features[4] = 1013.0f;// pressure
+    features[0] = 35.0f;    // temperature (high)
+    features[1] = 90.0f;    // humidity (very high)
+    features[2] = 0.9f;     // density (high)
+    features[3] = 900.0f;   // light (very bright)
+    features[4] = 1030.0f;  // pressure (high)
     result = predict(features);
 
-    char buf[32];
-    snprintk(buf, sizeof(buf), "Result: %d", result);
-    oled_write_line(4, buf);
+    led_bar_set(result);
 }
