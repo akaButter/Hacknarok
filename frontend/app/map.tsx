@@ -1,7 +1,9 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import MapView, { Marker, UrlTile, Polyline, Callout } from 'react-native-maps';
 import data from './viking_city.json';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 interface Route {
   id: string;
@@ -21,6 +23,7 @@ interface Attraction {
 }
 
 export default function VikingMap() {
+  const router = useRouter();
   return (
     <View style={styles.container}>
       <MapView
@@ -68,6 +71,13 @@ export default function VikingMap() {
           </Marker>
         ))}
       </MapView>
+
+      <TouchableOpacity 
+  style={styles.backButtonFloating} 
+  onPress={() => router.replace('/' as any)}
+>
+  <Ionicons name="home" size={24} color="#1A222D" />
+</TouchableOpacity>
     </View>
   );
 }
@@ -75,8 +85,25 @@ export default function VikingMap() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { flex: 1 },
-  callout: { padding: 10, minWidth: 150 },
-  name: { fontWeight: 'bold', fontSize: 16, color: '#3E2723' },
-  type: { color: '#7f8c8d', fontSize: 12, marginBottom: 5 },
-  hours: { fontSize: 12, color: '#2c3e50' }
+  callout: { padding: 12, minWidth: 160, backgroundColor: '#1F2A36', borderRadius: 14, borderWidth: 1, borderColor: '#2F4460' },
+  name: { fontWeight: 'bold', fontSize: 16, color: '#D4AF37' },
+  type: { color: '#B8C1CC', fontSize: 12, marginBottom: 6 },
+  hours: { fontSize: 12, color: '#E8EBF1' },
+  backButtonFloating: {
+  position: 'absolute',
+  top: 50,
+  left: 20,
+  backgroundColor: '#D4AF37',
+  width: 50,
+  height: 50,
+  borderRadius: 25,
+  justifyContent: 'center',
+  alignItems: 'center',
+  elevation: 5,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  borderWidth: 2,
+  borderColor: '#3E2723'
+}
 });

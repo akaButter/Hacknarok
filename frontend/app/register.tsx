@@ -87,15 +87,15 @@ export default function RegisterProfile() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#1A222D', padding: 30, justifyContent: 'center' },
-  header: { color: '#D4AF37', fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginBottom: 30 },
-  label: { color: '#D4AF37', marginBottom: 5 },
-  input: { backgroundColor: '#2C3E50', color: '#FFF', padding: 15, borderRadius: 8, marginBottom: 15 },
+  container: { flex: 1, backgroundColor: '#121C28', padding: 30, justifyContent: 'center' },
+  header: { color: '#D4AF37', fontSize: 30, fontWeight: '900', textAlign: 'center', marginBottom: 30, letterSpacing: 1.2, fontFamily: 'VikingFont' },
+  label: { color: '#D4AF37', marginBottom: 8, letterSpacing: 0.5, fontFamily: 'ScandiFont' },
+  input: { backgroundColor: '#1F2A36', color: '#FFF', padding: 16, borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: '#2F4460', fontFamily: 'ScandiFont' },
   genderRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
-  genderBtn: { backgroundColor: '#2C3E50', padding: 10, borderRadius: 8, width: '48%', alignItems: 'center' },
-  activeBtn: { borderColor: '#D4AF37', borderWidth: 2 },
-  btnText: { color: '#FFF' },
-  button: { backgroundColor: '#D4AF37', padding: 20, borderRadius: 50, alignItems: 'center', marginTop: 20 },
-  buttonText: { color: '#1A222D', fontWeight: 'bold' },
-  linkText: { color: '#BDC3C7', textAlign: 'center', marginTop: 20, textDecorationLine: 'underline' }
+  genderBtn: { backgroundColor: '#1F2A36', padding: 14, borderRadius: 14, width: '48%', alignItems: 'center', borderWidth: 1, borderColor: '#2F4460' },
+  activeBtn: { backgroundColor: '#D4AF37' },
+  btnText: { color: '#FFF', fontWeight: '700', fontFamily: 'ScandiFont' },
+  button: { backgroundColor: '#D4AF37', padding: 18, borderRadius: 24, alignItems: 'center', marginTop: 20 },
+  buttonText: { color: '#121C28', fontWeight: 'bold', letterSpacing: 1, fontFamily: 'ScandiFont' },
+  linkText: { color: '#B8C1CC', textAlign: 'center', marginTop: 20, textDecorationLine: 'underline', fontFamily: 'ScandiFont' }
 });

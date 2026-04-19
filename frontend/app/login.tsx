@@ -67,11 +67,11 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#1A222D', padding: 30, justifyContent: 'center' },
-  header: { color: '#D4AF37', fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginBottom: 40 },
-  label: { color: '#D4AF37', marginBottom: 10 },
-  input: { backgroundColor: '#2C3E50', color: '#FFF', padding: 15, borderRadius: 10, marginBottom: 20 },
-  button: { backgroundColor: '#D4AF37', padding: 20, borderRadius: 50, alignItems: 'center' },
-  buttonText: { color: '#1A222D', fontWeight: 'bold' },
-  linkText: { color: '#BDC3C7', textAlign: 'center', marginTop: 20, textDecorationLine: 'underline' }
+  container: { flex: 1, backgroundColor: '#121C28', padding: 30, justifyContent: 'center' },
+  header: { color: '#D4AF37', fontSize: 30, fontWeight: '900', textAlign: 'center', marginBottom: 40, letterSpacing: 1.2, fontFamily: 'VikingFont' },
+  label: { color: '#D4AF37', marginBottom: 10, letterSpacing: 0.5, fontFamily: 'ScandiFont' },
+  input: { backgroundColor: '#1F2A36', color: '#FFF', padding: 16, borderRadius: 16, marginBottom: 20, borderWidth: 1, borderColor: '#2F4460' },
+  button: { backgroundColor: '#D4AF37', padding: 18, borderRadius: 20, alignItems: 'center' },
+  buttonText: { color: '#121C28', fontWeight: 'bold', letterSpacing: 1, fontFamily: 'ScandiFont' },
+  linkText: { color: '#B8C1CC', textAlign: 'center', marginTop: 20, textDecorationLine: 'underline', fontFamily: 'ScandiFont' }
 });
