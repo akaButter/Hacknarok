@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from db import get_db
 from sqlalchemy.orm import Session
 
-from models import BusState, User, Attraction
+from models import BusState, User, Attraction, ComfortFeedback
 from ai import compute_comfort
 from genetic_algorithm.viking_ga import VikingOptimizer
 
@@ -152,3 +152,41 @@ def generate_tour(user_id: str, db: Session = Depends(get_db)):
 def get_all_attractions(db: Session = Depends(get_db)):
     locations = db.query(Attraction).all()
     return locations
+
+@router.post("/bus/{bus_id}/comfort/feedback")
+def send_feedback(
+    bus_id: str,
+    payload: dict,
+    db: Session = Depends(get_db)
+):
+    """
+    payload = {
+        "user_id": "viking123",
+        "feedback": 3   # skala 1-8
+    }
+    """
+
+    bus = db.query(BusState).filter_by(bus_id=bus_id).first()
+    user = db.query(User).filter_by(user_id=payload.get("user_id")).first()
+
+    if not bus:
+        raise HTTPException(status_code=404, detail="Bus not found")
+
+    predicted = compute_comfort(bus, user)
+
+    fb = ComfortFeedback(
+        bus_id=bus_id,
+        user_id=payload.get("user_id"),
+
+        temperature=bus.temperature,
+        humidity=bus.humidity,
+        people_count=bus.people_count,
+
+        predicted_comfort=predicted,
+        user_feedback=payload.get("feedback")
+    )
+
+    db.add(fb)
+    db.commit()
+
+    return {"status": "feedback_saved"}
