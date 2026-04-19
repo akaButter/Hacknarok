@@ -128,30 +128,48 @@ def create_bus(bus_id: str, db: Session = Depends(get_db)):
         "bus_id": new_bus["bus_id"]
     }
 
-@router.get("/generate-tour")
-def generate_tour(user_id: str, db: Session = Depends(get_db)):
-    user = db.query(User).filter_by(user_id=user_id).first()
-    optimizer = VikingOptimizer(db, user)
-    
-    best_tour_ids = optimizer.evolve()
-    
-    # Map IDs back to full objects for the frontend
-    full_tour = []
-    for tid in best_tour_ids:
-        attr = db.query(Attraction).filter_by(id=tid).first()
-        full_tour.append({
-            "name": attr.name,
-            "lat": attr.lat,
-            "lng": attr.lng,
-            "type": attr.type
-        })
-        
-    return {"suggested_tour": full_tour}
-
 @router.get("/attractions")
 def get_all_attractions(db: Session = Depends(get_db)):
     locations = db.query(Attraction).all()
     return locations
+
+@router.get("/attraction/{attraction_id}")
+def get_attraction(attraction_id: str, db: Session = Depends(get_db)):
+    attraction = db.query(Attraction).filter_by(id=attraction_id).first()
+    if not attraction:
+        return {"error": "not found"}
+    
+    return {
+        "id": attraction.id,
+        "name": attraction.name,
+        "type": attraction.type,
+        "lat": attraction.lat,
+        "lng": attraction.lng,
+        "capacity": attraction.capacity,
+        "route_id": attraction.route_id,
+        "open_hour": attraction.open_hour,
+        "close_hour": attraction.close_hour,
+        "temperature": attraction.temperature,
+        "humidity": attraction.humidity,
+        "pressure": attraction.pressure,
+        "people_count": attraction.people_count
+    }
+
+@router.get("/attraction/{attraction_id}/comfort")
+def attraction_comfort(attraction_id: str, user_id: str, db: Session = Depends(get_db)):
+
+    attr = db.query(Attraction).filter_by(id=attraction_id).first()
+    user = db.query(User).filter_by(user_id=user_id).first()
+
+    if not attr or not user:
+        return {"error": "not found"}
+
+    return {
+        "attraction_id": attraction_id,
+        "ai": {
+            "comfort_level": compute_comfort(attr, user)
+        }
+    }
 
 @router.post("/bus/{bus_id}/comfort/feedback")
 def send_feedback(
@@ -190,6 +208,26 @@ def send_feedback(
     db.commit()
 
     return {"status": "feedback_saved"}
+
+@router.get("/generate-tour")
+def generate_tour(user_id: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter_by(user_id=user_id).first()
+    optimizer = VikingOptimizer(db, user)
+    
+    best_tour_ids = optimizer.evolve()
+    
+    # Map IDs back to full objects for the frontend
+    full_tour = []
+    for tid in best_tour_ids:
+        attr = db.query(Attraction).filter_by(id=tid).first()
+        full_tour.append({
+            "name": attr.name,
+            "lat": attr.lat,
+            "lng": attr.lng,
+            "type": attr.type
+        })
+        
+    return {"suggested_tour": full_tour}
 
 @router.get("/generate-tour/{user_id}")
 def generate_tour(user_id: str, db: Session = Depends(get_db)):

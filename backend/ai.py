@@ -28,33 +28,24 @@ class VikingAI:
         ]], dtype=np.float32)
 
         prediction = self.session.run([self.label_name], {self.input_name: input_data})[0]
-        
         return int(prediction[0])
 
 viking_predictor = VikingAI()
 
-def compute_comfort(bus, user) -> int:
+def compute_comfort(place, user) -> int:
     """
     Translates Database Objects into AI-ready inputs.
     """
     try:
-        if type(bus) == Attraction:
-            humidity = 50  # Default humidity for attractions
-            density = 0   # No people count for attractions
-            pressure = 1013  # Default pressure for attractions
-        else:
-            humidity = bus.humidity if bus.humidity is not None else 50
-            density = bus.people_count/bus.capacity if bus.capacity else 0
-            pressure = bus.pressure if bus.pressure is not None else 1013
         score = viking_predictor.predict_comfort(
             age=user.age,
             gender=0 if user.gender.lower() == "male" else 1,
             height=user.height,
             weight=user.weight,
-            temp=bus.temperature,
-            humidity=humidity,
-            density=density,
-            pressure=pressure
+            temp=place.temperature,
+            humidity=place.humidity if place.humidity is not None else 50,
+            density=place.people_count/place.capacity if place.capacity else 0,
+            pressure=place.pressure if place.pressure is not None else 1013
         )
         return score
     except Exception as e:

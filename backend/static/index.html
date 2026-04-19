@@ -2,207 +2,100 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Smart Bus Dashboard</title>
-
+<title>Viking API Panel</title>
 <style>
-body {
-    font-family: Arial;
-    background: #f3f4f6;
-    margin: 0;
-    padding: 20px;
-}
-
-h1 { text-align: center; }
-
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    max-width: 1200px;
-    margin: auto;
-}
-
-.card {
-    background: white;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.bus {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    cursor: pointer;
-}
-
-.bus:hover {
-    background: #f0f0f0;
-}
-
-input, button {
-    width: 100%;
-    padding: 8px;
-    margin: 5px 0;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-}
-
-button {
-    background: #2563eb;
-    color: white;
-    cursor: pointer;
-}
-
-button:hover {
-    background: #1d4ed8;
-}
-
-ul {
-    padding-left: 18px;
-}
+    body { font-family: Arial; margin: 20px; }
+    .section { margin-bottom: 30px; padding: 10px; border: 1px solid #ccc; }
+    .bus, .item { padding: 8px; border: 1px solid #ddd; margin: 5px; cursor: pointer; }
+    input, button { margin: 5px; padding: 5px; }
+    pre { background: #111; color: #0f0; padding: 10px; }
 </style>
 </head>
-
 <body>
 
-<h1>🚍 Smart Bus Dashboard</h1>
+<h1>🚍 Viking API Panel</h1>
 
-<div class="grid">
-
-<!-- BUS LIST -->
-<div class="card">
+<div class="section">
     <h2>Buses</h2>
+    <button onclick="loadBuses()">Load Buses</button>
     <div id="buses"></div>
 </div>
 
-<!-- DETAILS -->
-<div class="card">
-    <h2>Details</h2>
-    <div id="busDetails">Click something...</div>
+<div class="section">
+    <h2>Single Bus</h2>
+    <input id="bus_id" placeholder="bus_id">
+    <button onclick="loadBus()">Get Bus</button>
 </div>
 
-<!-- USER -->
-<div class="card">
-    <h2>User</h2>
+<div class="section">
+    <h2>Create Bus</h2>
+    <input id="new_bus_id" placeholder="bus_id">
+    <button onclick="createBus()">Create</button>
+</div>
 
+<div class="section">
+    <h2>User Register</h2>
     <input id="u_user" placeholder="user_id">
     <input id="u_age" placeholder="age">
     <input id="u_gender" placeholder="gender">
     <input id="u_height" placeholder="height">
     <input id="u_weight" placeholder="weight">
-
     <button onclick="register()">Register</button>
+</div>
 
-    <input id="login_user" placeholder="login user_id">
+<div class="section">
+    <h2>Login</h2>
+    <input id="login_user" placeholder="user_id">
     <button onclick="login()">Login</button>
 </div>
 
-<!-- ACTIONS -->
-<div class="card">
-    <h2>Actions</h2>
-
-    <input id="bus_id" placeholder="bus_id">
-    <input id="user_id" placeholder="user_id">
-
-    <button onclick="getComfort()">Check Comfort AI</button>
-
-    <input id="fb_bus" placeholder="bus_id">
-    <input id="fb_user" placeholder="user_id">
-    <input id="fb_val" placeholder="feedback 1-8">
-
-    <button onclick="sendFeedback()">Send Feedback</button>
-
-    <button onclick="getAttractions()">Get Attractions</button>
-
-    <input id="tour_user" placeholder="user_id">
-    <button onclick="generateTour()">Generate Tour</button>
+<div class="section">
+    <h2>Comfort AI</h2>
+    <input id="c_bus" placeholder="bus_id">
+    <input id="c_user" placeholder="user_id">
+    <button onclick="getComfort()">Get Comfort</button>
 </div>
 
+<div class="section">
+    <h2>Feedback</h2>
+    <input id="fb_bus" placeholder="bus_id">
+    <input id="fb_user" placeholder="user_id">
+    <input id="fb_val" placeholder="feedback (1-8)">
+    <button onclick="sendFeedback()">Send</button>
+</div>
+
+<div class="section">
+    <h2>Attractions</h2>
+    <button onclick="getAttractions()">Load Attractions</button>
+    <div id="attractions"></div>
+</div>
+
+<div class="section">
+    <h2>Attraction Comfort</h2>
+    <input id="a_id" placeholder="attraction_id">
+    <input id="a_user" placeholder="user_id">
+    <button onclick="getAttractionComfort()">Check Comfort</button>
+</div>
+
+<div class="section">
+    <h2>Generate Tour</h2>
+    <input id="tour_user" placeholder="user_id">
+    <button onclick="generateTour()">Generate</button>
+</div>
+
+<div class="section">
+    <h2>Output</h2>
+    <pre id="output"></pre>
 </div>
 
 <script>
-
-/* =========================
-   RENDER ENGINE
-========================= */
-
-function render(obj, title="Response") {
-    const el = document.getElementById("busDetails");
-
-    if (!obj) {
-        el.innerHTML = "No data";
-        return;
-    }
-
-    // LOGIN / REGISTER
-    if (obj.user_data) {
-        el.innerHTML = `
-        <div class="card">
-            <h3>${title}</h3>
-            <p><b>Status:</b> ${obj.status}</p>
-            <p><b>Message:</b> ${obj.message}</p>
-            <hr/>
-            <b>User:</b>
-            <ul>
-                <li>ID: ${obj.user_data.user_id}</li>
-                <li>Age: ${obj.user_data.age}</li>
-                <li>Gender: ${obj.user_data.gender}</li>
-                <li>Height: ${obj.user_data.height}</li>
-                <li>Weight: ${obj.user_data.weight}</li>
-            </ul>
-        </div>`;
-        return;
-    }
-
-    // COMFORT AI
-    if (obj.ai) {
-        el.innerHTML = `
-        <div class="card">
-            <h3>Comfort Score</h3>
-            <p><b>Bus:</b> ${obj.bus_id}</p>
-            <p><b>Comfort:</b> ${obj.ai.comfort_level}</p>
-        </div>`;
-        return;
-    }
-
-    // ATTRACTIONS
-    if (Array.isArray(obj)) {
-        el.innerHTML = `
-        <div class="card">
-            <h3>Attractions</h3>
-            ${obj.map(a => `
-                <div style="border:1px solid #ddd; padding:8px; margin:8px 0; border-radius:8px;">
-                    <b>${a.name}</b> (${a.type})<br/>
-                    Capacity: ${a.capacity} people<br/>
-                    Open hours: ${a.open_hour} - ${a.close_hour}
-                </div>
-            `).join("")}
-        </div>`;
-        return;
-    }
-    if (obj.suggested_tour) {
-    el.innerHTML = `
-    <div class="card">
-        <h3>🗺️ Suggested Tour</h3>
-
-        ${obj.suggested_tour.map(p => `
-            <div style="border:1px solid #ddd; padding:8px; margin:8px 0; border-radius:8px;">
-                <b>${p.name}</b> (${p.type})<br/>
-                📍 ${p.lat}, ${p.lng}
-            </div>
-        `).join("")}
-    </div>`;
-    return;
-}
-    // fallback
-    el.textContent = JSON.stringify(obj, null, 2);
+function render(data, title) {
+    document.getElementById("output").textContent =
+        title + "\n\n" + JSON.stringify(data, null, 2);
 }
 
-
 /* =========================
-   BUS LIST
+   BUSES
 ========================= */
 
 async function loadBuses() {
@@ -218,24 +111,32 @@ async function loadBuses() {
 
         div.innerHTML = `
             <b>${bus.bus_id}</b><br/>
-            Temp: ${bus.temperature ?? "-"}°C<br/>
+            Temp: ${bus.temperature ?? "-"}<br/>
             People: ${bus.people_count ?? "-"}<br/>
             Comfort: ${bus.general_comfort_level ?? "-"}
         `;
 
         div.onclick = () => loadBus(bus.bus_id);
-
         container.appendChild(div);
     });
 }
 
 async function loadBus(id) {
-    const res = await fetch(`/bus/${id}`);
-    const data = await res.json();
+    if (!id) id = document.getElementById("bus_id").value;
 
+    const res = await fetch(`/bus/${id}`);
     render(await res.json(), "Bus Details");
 }
 
+async function createBus() {
+    const id = document.getElementById("new_bus_id").value;
+
+    const res = await fetch("/bus?bus_id=" + id, {
+        method: "POST"
+    });
+
+    render(await res.json(), "Create Bus");
+}
 
 /* =========================
    USER
@@ -254,14 +155,7 @@ async function register() {
         })
     });
 
-    const data = await res.json();
-
-    render({
-        status: data.status,
-        message: data.status === "created"
-            ? "User created successfully"
-            : "User already exists"
-    }, "Register");
+    render(await res.json(), "Register");
 }
 
 async function login() {
@@ -274,13 +168,14 @@ async function login() {
     render(await res.json(), "Login");
 }
 
-
 /* =========================
-   BUS ACTIONS
+   COMFORT + FEEDBACK
 ========================= */
 
 async function getComfort() {
-    const res = await fetch(`/bus/${bus_id.value}/comfort?user_id=${user_id.value}`);
+    const res = await fetch(
+        `/bus/${c_bus.value}/comfort?user_id=${c_user.value}`
+    );
     render(await res.json(), "Comfort AI");
 }
 
@@ -297,28 +192,48 @@ async function sendFeedback() {
     render(await res.json(), "Feedback");
 }
 
+/* =========================
+   ATTRACTIONS
+========================= */
+
+async function getAttractions() {
+    const res = await fetch("/attractions");
+    const data = await res.json();
+
+    const container = document.getElementById("attractions");
+    container.innerHTML = "";
+
+    data.forEach(a => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerText = `${a.name} (${a.type})`;
+        div.onclick = () => getAttraction(a.id);
+        container.appendChild(div);
+    });
+
+    render(data, "Attractions");
+}
+
+async function getAttraction(id) {
+    const res = await fetch(`/attraction/${id}`);
+    render(await res.json(), "Attraction");
+}
+
+async function getAttractionComfort() {
+    const res = await fetch(
+        `/attraction/${a_id.value}/comfort?user_id=${a_user.value}`
+    );
+    render(await res.json(), "Attraction Comfort");
+}
 
 /* =========================
    TOUR
 ========================= */
 
-async function getAttractions() {
-    const res = await fetch("/attractions");
-    render(await res.json(), "Attractions");
-}
-
 async function generateTour() {
     const res = await fetch(`/generate-tour?user_id=${tour_user.value}`);
     render(await res.json(), "Tour");
 }
-
-
-/* =========================
-   INIT
-========================= */
-
-loadBuses();
-
 </script>
 
 </body>
