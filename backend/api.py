@@ -82,7 +82,7 @@ def login(credentials: dict, db: Session = Depends(get_db)):
         "user_data": {
             "user_id": user.user_id,
             "age": user.age,
-            "sex": user.sex,
+            "gender": user.gender,
             "height": user.height,
             "weight": user.weight
         }
