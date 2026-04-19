@@ -1,45 +1,210 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Bus Dashboard</title>
-    <style>
-        body {
-            font-family: Arial;
-            margin: 30px;
-            background: #f4f4f4;
-        }
+<meta charset="UTF-8">
+<title>Smart Bus Dashboard</title>
 
-        .bus {
-            background: white;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 8px;
-            cursor: pointer;
-        }
+<style>
+body {
+    font-family: Arial;
+    background: #f3f4f6;
+    margin: 0;
+    padding: 20px;
+}
 
-        .panel {
-            margin-top: 20px;
-            padding: 15px;
-            background: white;
-            border-radius: 8px;
-        }
-    </style>
+h1 { text-align: center; }
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.card {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.bus {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.bus:hover {
+    background: #f0f0f0;
+}
+
+input, button {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+ul {
+    padding-left: 18px;
+}
+</style>
 </head>
+
 <body>
 
-<h1>🚌 Bus Dashboard</h1>
+<h1>🚍 Smart Bus Dashboard</h1>
 
-<button onclick="loadBuses()">Odśwież listę autobusów</button>
+<div class="grid">
 
-<div id="buses"></div>
+<!-- BUS LIST -->
+<div class="card">
+    <h2>Buses</h2>
+    <div id="buses"></div>
+</div>
 
-<div class="panel" id="details">
-    <h3>Szczegóły autobusu</h3>
-    <pre id="busDetails">Kliknij autobus</pre>
+<!-- DETAILS -->
+<div class="card">
+    <h2>Details</h2>
+    <div id="busDetails">Click something...</div>
+</div>
+
+<!-- USER -->
+<div class="card">
+    <h2>User</h2>
+
+    <input id="u_user" placeholder="user_id">
+    <input id="u_age" placeholder="age">
+    <input id="u_gender" placeholder="gender">
+    <input id="u_height" placeholder="height">
+    <input id="u_weight" placeholder="weight">
+
+    <button onclick="register()">Register</button>
+
+    <input id="login_user" placeholder="login user_id">
+    <button onclick="login()">Login</button>
+</div>
+
+<!-- ACTIONS -->
+<div class="card">
+    <h2>Actions</h2>
+
+    <input id="bus_id" placeholder="bus_id">
+    <input id="user_id" placeholder="user_id">
+
+    <button onclick="getComfort()">Check Comfort AI</button>
+
+    <input id="fb_bus" placeholder="bus_id">
+    <input id="fb_user" placeholder="user_id">
+    <input id="fb_val" placeholder="feedback 1-8">
+
+    <button onclick="sendFeedback()">Send Feedback</button>
+
+    <button onclick="getAttractions()">Get Attractions</button>
+
+    <input id="tour_user" placeholder="user_id">
+    <button onclick="generateTour()">Generate Tour</button>
+</div>
+
 </div>
 
 <script>
+
+/* =========================
+   RENDER ENGINE
+========================= */
+
+function render(obj, title="Response") {
+    const el = document.getElementById("busDetails");
+
+    if (!obj) {
+        el.innerHTML = "No data";
+        return;
+    }
+
+    // LOGIN / REGISTER
+    if (obj.user_data) {
+        el.innerHTML = `
+        <div class="card">
+            <h3>${title}</h3>
+            <p><b>Status:</b> ${obj.status}</p>
+            <p><b>Message:</b> ${obj.message}</p>
+            <hr/>
+            <b>User:</b>
+            <ul>
+                <li>ID: ${obj.user_data.user_id}</li>
+                <li>Age: ${obj.user_data.age}</li>
+                <li>Gender: ${obj.user_data.gender}</li>
+                <li>Height: ${obj.user_data.height}</li>
+                <li>Weight: ${obj.user_data.weight}</li>
+            </ul>
+        </div>`;
+        return;
+    }
+
+    // COMFORT AI
+    if (obj.ai) {
+        el.innerHTML = `
+        <div class="card">
+            <h3>Comfort Score</h3>
+            <p><b>Bus:</b> ${obj.bus_id}</p>
+            <p><b>Comfort:</b> ${obj.ai.comfort_level}</p>
+        </div>`;
+        return;
+    }
+
+    // ATTRACTIONS
+    if (Array.isArray(obj)) {
+        el.innerHTML = `
+        <div class="card">
+            <h3>Attractions</h3>
+            ${obj.map(a => `
+                <div style="border:1px solid #ddd; padding:8px; margin:8px 0; border-radius:8px;">
+                    <b>${a.name}</b> (${a.type})<br/>
+                    Capacity: ${a.capacity} people<br/>
+                    Open hours: ${a.open_hour} - ${a.close_hour}
+                </div>
+            `).join("")}
+        </div>`;
+        return;
+    }
+    if (obj.suggested_tour) {
+    el.innerHTML = `
+    <div class="card">
+        <h3>🗺️ Suggested Tour</h3>
+
+        ${obj.suggested_tour.map(p => `
+            <div style="border:1px solid #ddd; padding:8px; margin:8px 0; border-radius:8px;">
+                <b>${p.name}</b> (${p.type})<br/>
+                📍 ${p.lat}, ${p.lng}
+            </div>
+        `).join("")}
+    </div>`;
+    return;
+}
+    // fallback
+    el.textContent = JSON.stringify(obj, null, 2);
+}
+
+
+/* =========================
+   BUS LIST
+========================= */
+
 async function loadBuses() {
     const res = await fetch("/buses");
     const buses = await res.json();
@@ -53,7 +218,7 @@ async function loadBuses() {
 
         div.innerHTML = `
             <b>${bus.bus_id}</b><br/>
-            Temp: ${bus.temperature ?? "-"} °C<br/>
+            Temp: ${bus.temperature ?? "-"}°C<br/>
             People: ${bus.people_count ?? "-"}<br/>
             Comfort: ${bus.general_comfort_level ?? "-"}
         `;
@@ -66,14 +231,94 @@ async function loadBuses() {
 
 async function loadBus(id) {
     const res = await fetch(`/bus/${id}`);
-    const bus = await res.json();
+    const data = await res.json();
 
-    document.getElementById("busDetails").textContent =
-        JSON.stringify(bus, null, 2);
+    render(await res.json(), "Bus Details");
 }
 
-// auto load
+
+/* =========================
+   USER
+========================= */
+
+async function register() {
+    const res = await fetch("/register", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+            user_id: u_user.value,
+            age: Number(u_age.value),
+            gender: u_gender.value,
+            height: Number(u_height.value),
+            weight: Number(u_weight.value)
+        })
+    });
+
+    const data = await res.json();
+
+    render({
+        status: data.status,
+        message: data.status === "created"
+            ? "User created successfully"
+            : "User already exists"
+    }, "Register");
+}
+
+async function login() {
+    const res = await fetch("/login", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ user_id: login_user.value })
+    });
+
+    render(await res.json(), "Login");
+}
+
+
+/* =========================
+   BUS ACTIONS
+========================= */
+
+async function getComfort() {
+    const res = await fetch(`/bus/${bus_id.value}/comfort?user_id=${user_id.value}`);
+    render(await res.json(), "Comfort AI");
+}
+
+async function sendFeedback() {
+    const res = await fetch(`/bus/${fb_bus.value}/comfort/feedback`, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+            user_id: fb_user.value,
+            feedback: Number(fb_val.value)
+        })
+    });
+
+    render(await res.json(), "Feedback");
+}
+
+
+/* =========================
+   TOUR
+========================= */
+
+async function getAttractions() {
+    const res = await fetch("/attractions");
+    render(await res.json(), "Attractions");
+}
+
+async function generateTour() {
+    const res = await fetch(`/generate-tour?user_id=${tour_user.value}`);
+    render(await res.json(), "Tour");
+}
+
+
+/* =========================
+   INIT
+========================= */
+
 loadBuses();
+
 </script>
 
 </body>
