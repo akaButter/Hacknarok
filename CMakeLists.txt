@@ -10,4 +10,5 @@ target_sources(app PRIVATE
   src/oled.c
   src/model.c
   src/led.c
+  src/people_counter.c
 )

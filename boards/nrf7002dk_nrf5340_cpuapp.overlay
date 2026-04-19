@@ -35,3 +35,19 @@
         prechargep = <0x22>;
     };
 };
+
+/ {
+    hc_sr04 {
+        compatible = "gpio-keys";
+
+        trig_pin: trig_pin {
+            gpios = <&gpio1 5 GPIO_ACTIVE_HIGH>;
+            label = "Trigger";
+        };
+
+        echo_pin: echo_pin {
+            gpios = <&gpio1 4 GPIO_ACTIVE_HIGH>;
+            label = "Echo";
+        };
+    };
+};
