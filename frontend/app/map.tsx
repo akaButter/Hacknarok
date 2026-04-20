@@ -41,7 +41,6 @@ export default function VikingMap() {
           maximumZ={19}
         />
 
-        {/* RYSOWANIE TRAS (Bifrost, Iron Path itd.) */}
         {data.routes.map((route: Route) => (
           <Polyline
             key={route.id}
