@@ -1,9 +1,20 @@
 ﻿# Hacknarok AIOT - DrakkarTour
 
- This project was developed as part of an AIoT (Artificial Intelligence of Things) challenge under the theme Smart City.
+ This project was developed as part of an AIoT (Artificial Intelligence of Things) challenge under the theme Vikings' Smart City. As we all know, Vikings are knows for their love of travel - that's why, we decided to create a system that will make travel more comfortable for modern era vikings.
+ 
  It focuses on improving urban public transport experience by combining embedded systems, machine learning, and a mobile application ecosystem.
 
 The system provides insights about bus occupancy, environmental conditions, and passenger comfort, while also offering personalized recommendations and optimized travel planning.
+
+
+<a href="https://drive.google.com/file/d/1ey0MpxpdZ2O3ohUzNOIq7wxSWfGtFXbA/view?usp=sharing">
+  Watch mobile app preview
+</a>
+
+<div align="center">
+  <img src="./docs/media/IMG_20260419_055036941.jpg" width="200">
+  <img src="./docs/media/IMG_20260419_021336872.jpg" width="200">
+</div>
 
 ---
 
@@ -13,6 +24,43 @@ The project consists of three main components:
  - Firmware (Edge / IoT Device)
  - Backend (AI + APIs)
  - Mobile Application (Frontend)
+
+```mermaid
+graph TD
+
+    subgraph Firmware
+        A[IoT Device nRF7002]
+        B[Sensor]
+        C[On-device ML Model: General Comfort]
+        D[MQTT Client]
+
+        A --> B --> C --> D
+    end
+
+    D --> E[MQTT Broker]
+
+    subgraph Backend
+        F[Data Ingestion]
+        G[Processing]
+
+        H[Personalized ML Model]
+        I[Evolutionary Algorithm: Route Optimization]
+
+        J[API]
+
+        E --> F --> G
+        G --> H --> J
+        G --> I --> J
+    end
+
+    subgraph MobileApp
+        K[React Native App]
+    end
+
+    K --> J
+    J --> K
+
+```
 
 ---
 
@@ -68,6 +116,7 @@ Optimization:
 
 Firmware:
   - nRF7002Dk
+  - nRF Connect SDK
 
 Backend:
   - Python
@@ -81,5 +130,5 @@ AI Model training:
 
 Frontend:
   - React Native
-  - typescript
+  - TypeScript
 
