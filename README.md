@@ -10,10 +10,12 @@ The system provides insights about bus occupancy, environmental conditions, and 
 <a href="https://drive.google.com/file/d/1ey0MpxpdZ2O3ohUzNOIq7wxSWfGtFXbA/view?usp=sharing">
   Watch mobile app preview
 </a>
-
 <div align="center">
-  <img src="./docs/media/IMG_20260419_055036941.jpg" width="200">
-  <img src="./docs/media/IMG_20260419_021336872.jpg" width="200">
+  <img src="./docs/media/IMG_5649.png" height="300">
+  <img src="./docs/media/IMG_5650.png" height="300">
+
+  <img src="./docs/media/IMG_20260419_055036941.jpg" height="300">
+  <img src="./docs/media/IMG_20260419_021336872.jpg" height="300">
 </div>
 
 ---
